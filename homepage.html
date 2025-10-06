@@ -1,1 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Space</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: #f7fbff;
+            color: #222;
+        }
+        header {
+            background: #e3f0ff;
+            border-radius: 0 0 2rem 2rem;
+            padding: 2rem 0 3rem 0;
+            text-align: center;
+            box-shadow: 0 4px 24px 0 rgba(100, 150, 255, 0.08);
+        }
+        header h1 {
+            font-size: 2.8rem;
+            margin: 0;
+            color: #3a7bd5;
+            letter-spacing: 1px;
+        }
+        header p {
+            font-size: 1.2rem;
+            color: #5a7bbd;
+            margin-top: 1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: -2rem auto 0 auto;
+            background: #fff;
+            border-radius: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.08);
+            padding: 2.5rem 2rem 3rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+        }
+        .feature {
+            background: #f0f7ff;
+            border-radius: 1.5rem;
+            flex: 1 1 250px;
+            min-width: 250px;
+            max-width: 300px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 12px 0 rgba(58, 123, 213, 0.04);
+            transition: transform 0.2s;
+        }
+        .feature:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.12);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #3a7bd5;
+            margin-bottom: 1rem;
+        }
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .feature-desc {
+            font-size: 1rem;
+            color: #5a7bbd;
+        }
+        .cta {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+        .cta-btn {
+            background: linear-gradient(90deg, #3a7bd5 0%, #6ec6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 2rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 16px 0 rgba(58, 123, 213, 0.10);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .cta-btn:hover {
+            background: linear-gradient(90deg, #6ec6ff 0%, #3a7bd5 100%);
+            transform: scale(1.04);
+        }
+        
+        .menu-bar {
+            background: #fff;
+            border-bottom: 1px solid #e3f0ff;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px 0 rgba(58, 123, 213, 0.06);
+        }
+        
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+        
+        .quick-create {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quick-create-btn {
+            background: linear-gradient(90deg, #3a7bd5 0%, #6ec6ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        
+        .quick-create-btn:hover {
+            background: linear-gradient(90deg, #6ec6ff 0%, #3a7bd5 100%);
+            transform: scale(1.02);
+        }
+        
+        .recent-flashcards {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .recent-label {
+            font-weight: 600;
+            color: #3a7bd5;
+            white-space: nowrap;
+        }
+        
+        .recent-items {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            flex: 1;
+            padding: 0.25rem 0;
+        }
+        
+        .recent-item {
+            background: #f0f7ff;
+            border: 1px solid #e3f0ff;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            color: #3a7bd5;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+        
+        .recent-item:hover {
+            background: #e3f0ff;
+            transform: scale(1.02);
+        }
+        
+        @media (max-width: 700px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem 0.5rem 2rem 0.5rem;
+            }
+            
+            .menu-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+            
+            .recent-flashcards {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Study Space</h1>
+        <p>Създавай, учи и споделяй флашкарти лесно и удобно!</p>
+    </header>
+    
+    <div class="menu-bar">
+        <div class="menu-container">
+            <div class="quick-create">
+                <button class="quick-create-btn">
+                    <span>➕</span>
+                    Нова флашкарта
+                </button>
+            </div>
+            
+            <div class="recent-flashcards">
+                <div class="recent-label">Скорошни:</div>
+                <div class="recent-items">
+                    <div class="recent-item">Математика - Производни</div>
+                    <div class="recent-item">История - Възраждане</div>
+                    <div class="recent-item">Английски - Irregular Verbs</div>
+                    <div class="recent-item">Биология - Клетка</div>
+                    <div class="recent-item">Физика - Механика</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <main>
+        <div class="container">
+            <div class="feature">
+                <div class="feature-icon">📝</div>
+                <div class="feature-title">Лесно създаване</div>
+                <div class="feature-desc">Създавай флашкарти за секунди с интуитивен интерфейс.</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-title">Учи ефективно</div>
+                <div class="feature-desc">Използвай различни режими за учене и следи напредъка си.</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤝</div>
+                <div class="feature-title">Споделяй с други</div>
+                <div class="feature-desc">Споделяй своите флашкарти с приятели и общността.</div>
+            </div>
+        </div>
+        <div class="cta">
+            <button class="cta-btn">Започни сега</button>
+        </div>
+    </main>
+</body>
+</html>
 
