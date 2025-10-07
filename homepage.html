@@ -1,248 +1,323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Space</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', Arial, sans-serif;
-            background: #f7fbff;
-            color: #222;
+        :root{
+            --bg:#e6f2ff;
+            --glass-1: rgba(255,255,255,0.65);
+            --glass-2: rgba(230,245,255,0.40);
+            --accent:#0b63c7; /* stronger blue */
+            --accent-2:#009fe6;
+            --accent-dark:#05294a;
+            --muted:#6b87b7;
+            --soft:#f6fbff;
+            --frame-pad:clamp(14px,2.2vw,28px);
+            --gap:clamp(10px,1.4vw,18px);
         }
-        header {
-            background: #e3f0ff;
-            border-radius: 0 0 2rem 2rem;
-            padding: 2rem 0 3rem 0;
-            text-align: center;
-            box-shadow: 0 4px 24px 0 rgba(100, 150, 255, 0.08);
+
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        /* Dark page background (edge-to-edge) */
+        body{margin:0;font-family:'Montserrat',Arial,sans-serif;background:
+            linear-gradient(180deg, rgba(32, 102, 255, 0.72), rgba(255, 255, 255, 0.5)),
+            url('assets/bg-silk.jpg') center/cover no-repeat;
+            color:var(--accent-dark);display:block;padding:0;min-height:100vh}
+
+        /* Frame remains transparent */
+        .frame{
+            width:100vw;
+            max-width:100%;
+            background:transparent; /* no glass panel */
+            border-radius:0;
+            padding:clamp(18px,3.2vw,36px) clamp(20px,4vw,56px);
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+            border:0;
+            box-shadow:none;
+            margin:0;
+            position:relative;overflow:visible;
         }
-        header h1 {
-            font-size: 2.8rem;
-            margin: 0;
-            color: #3a7bd5;
-            letter-spacing: 1px;
+
+        /* Top bar fully transparent so background shows through */
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 8px;gap:var(--gap);background:transparent}
+
+        /* transparent, light glassy icon buttons */
+        .icon-btn{width:56px;height:56px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));border:1px solid rgba(255,255,255,0.12);box-shadow:0 8px 20px rgba(4,30,60,0.12);position:relative;overflow:hidden;backdrop-filter:blur(6px)}
+
+        /* faint mouse-position reflection (uses CSS vars set by JS) */
+        .icon-btn::before{content:'';position:absolute;left:0;top:0;right:0;bottom:0;border-radius:999px;pointer-events:none;z-index:1;mix-blend-mode:screen;background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.40) 18%, rgba(255,255,255,0.18) 36%, rgba(255,255,255,0.04) 60%, transparent 75%);opacity:var(--ref-opacity,0);transition:opacity 360ms ease, transform 260ms ease;filter:blur(6px);}
+
+        /* elongated center bar (wide pill) */
+        .center-pill{flex:1;display:flex;justify-content:center;padding:0 8px}
+        /* pill restored to semi-transparent glass */
+        .pill{width:min(1100px,92%);background:linear-gradient(90deg, rgba(255,255,255,0.10), rgba(240,250,255,0.06));border-radius:40px;padding:12px 28px;border:1px solid rgba(255,255,255,0.12);display:flex;justify-content:center;gap:24px;font-weight:800;align-items:center;position:relative;overflow:visible;backdrop-filter:blur(6px)}
+        .pill span{font-size:clamp(15px,1.4vw,18px);color:#e6f5ff;position:relative;z-index:2}
+
+        /* subtle inside accent for pill (disabled) */
+        .pill::after{content:'';position:absolute;left:6%;right:6%;top:50%;height:0;border-radius:999px;transform:translateY(-50%);background:transparent;opacity:0;pointer-events:none}
+
+        /* white sheen animation for icon buttons (contained inside button) */
+        .icon-btn::after{content:'';position:absolute;top:-20%;left:-60%;width:36%;height:140%;background:linear-gradient(120deg, rgba(255,255,255,0.95), rgba(255,255,255,0.65), rgba(255,255,255,0.28));transform:skewX(-22deg) translateX(0);opacity:0;transition:opacity 160ms;z-index:2;pointer-events:none}
+        @keyframes button-sheen { from { transform:skewX(-22deg) translateX(-120%); opacity:0 } 10% { opacity:0.9 } to { transform:skewX(-22deg) translateX(220%); opacity:0 } }
+        .icon-btn:hover::after{animation: button-sheen 640ms cubic-bezier(.2,.9,.3,1);}
+
+        /* single-run sheen helpers: play only when the element has .sheen-run or .sheen-back */
+        .icon-btn.sheen-run::after{animation: button-sheen 900ms cubic-bezier(.18,.8,.25,1) 1 forwards;}
+        .icon-btn.sheen-back::after{animation: button-sheen 480ms cubic-bezier(.3,.9,.4,1) 1 reverse;}
+
+        /* helper to force-finish an outgoing sheen so it doesn't linger when another button is hovered */
+        .icon-btn.sheen-end::after{transform:skewX(-22deg) translateX(220%) !important;opacity:0 !important;transition:none !important}
+        .card.sheen-end::before{transform:skewX(-18deg) translateX(220%) !important;opacity:0 !important;transition:none !important}
+
+        /* Cards area */
+        .cards-wrap{margin-top:calc(var(--gap) * 1.2);padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.4), rgba(240,250,255,0.18));border:1px solid rgba(255,255,255,0.6);display:flex;align-items:flex-start;box-shadow:0 8px 24px rgba(45,80,150,0.04)}
+
+        /* Responsive flow: cards will wrap and scale to available width */
+        .cards{display:flex;gap:var(--gap);width:100%;flex-wrap:wrap;align-items:flex-start}
+
+        /* Cards: make them light, glassy and button-like */
+        .card{
+            flex:1 1 clamp(200px,28%,320px);
+            min-width:180px;
+            min-height:140px;
+            padding:18px 20px;
+            border-radius:12px;
+            background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(245,250,255,0.06));
+            border:1px solid rgba(255,255,255,0.18);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            box-shadow:0 10px 30px rgba(2,18,40,0.12);
+            display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;color:var(--accent-dark);text-align:center;
+            gap:8px;position:relative;overflow:visible;z-index:2
         }
-        header p {
-            font-size: 1.2rem;
-            color: #5a7bbd;
-            margin-top: 1rem;
+        .card::after{ /* subtle inner sheen */
+            content:'';position:absolute;left:0;right:0;top:0;height:40%;border-radius:12px;pointer-events:none;background:linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0));mix-blend-mode:overlay;opacity:0.9;
         }
-        .container {
-            max-width: 900px;
-            margin: -2rem auto 0 auto;
-            background: #fff;
-            border-radius: 2rem;
-            box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.08);
-            padding: 2.5rem 2rem 3rem 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            justify-content: center;
+
+        /* animated contained sheen for cards (same behaviour as icon buttons) */
+        .card::before{content:'';position:absolute;top:-40%;left:-80%;width:60%;height:200%;background:linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.12), rgba(255,255,255,0));transform:skewX(-20deg) translateX(0);opacity:0;transition:transform 620ms cubic-bezier(.2,.9,.3,1),opacity 220ms;z-index:1;pointer-events:none;border-radius:12px}
+        .card:hover::before{transform:translateX(220%);opacity:1}
+        .card > .card-content{position:relative;z-index:2}
+        .card{cursor:pointer}
+
+        /* single-run sheen helpers: play only when the element has .sheen-run or .sheen-back */
+        .card.sheen-run::before{animation: button-sheen 900ms cubic-bezier(.18,.8,.25,1) 1;}
+        .card.sheen-back::before{animation: button-sheen 480ms cubic-bezier(.3,.9,.4,1) 1 reverse;}
+
+        /* ensure pseudo-elements are always clipped to the button area */
+        .icon-btn,.card{overflow:hidden}
+
+        @media (prefers-reduced-motion: reduce){
+            .card::before{transition:none;opacity:0}
+            .icon-btn::after{animation:none;opacity:0}
         }
-        .feature {
-            background: #f0f7ff;
-            border-radius: 1.5rem;
-            flex: 1 1 250px;
-            min-width: 250px;
-            max-width: 300px;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            box-shadow: 0 2px 12px 0 rgba(58, 123, 213, 0.04);
-            transition: transform 0.2s;
+
+        /* When there is little space, stack cards vertically */
+        @media (max-width:640px){
+            .topbar{gap:10px}
+            .pill{min-width:160px;padding:clamp(8px,4vw,14px)}
+            .cards{flex-direction:column}
+            .card{width:100%;flex-basis:auto}
+            .card.add{order:-1}
         }
-        .feature:hover {
-            transform: translateY(-6px) scale(1.03);
-            box-shadow: 0 8px 32px 0 rgba(58, 123, 213, 0.12);
+
+        /* dark reduced motion preference */
+        @media (prefers-reduced-motion: reduce){
+            .card:hover{transform:none;transition:none}
+            .card.land{animation:none}
+            .icon-btn::after,.icon-btn::before{transition:none;opacity:0}
         }
-        .feature-icon {
-            font-size: 2.5rem;
-            color: #3a7bd5;
-            margin-bottom: 1rem;
+
+        /* Glass only on icon buttons: controlled sheen animation that stays inside button */
+        .icon-btn{overflow:hidden}
+        .icon-btn::after{content:'';position:absolute;top:-40%;left:-80%;width:60%;height:200%;background:linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.12), rgba(255,255,255,0));transform:skewX(-20deg) translateX(0);opacity:0;transition:transform 620ms cubic-bezier(.2,.9,.3,1),opacity 220ms;z-index:1}
+        .icon-btn:hover::after{transform:translateX(220%);opacity:1}
+        .icon-btn > div{position:relative;z-index:3}
+
+        /* Disable CSS-only hover sheen except when JS has applied the single-run classes */
+        .icon-btn:not(.sheen-run):not(.sheen-back):hover::after,
+        .card:not(.sheen-run):not(.sheen-back):hover::before{animation:none !important;transform:none !important;opacity:0 !important}
+
+        /* gentle lift on hover (now JS-controlled via .lift) */
+        .card.lift{transform:translateY(-6px);box-shadow:0 26px 64px rgba(6,40,90,0.12);transition:transform 240ms cubic-bezier(.2,.9,.3,1),box-shadow 240ms}
+        .icon-btn.lift{transform:translateY(-4px);box-shadow:0 18px 44px rgba(6,40,90,0.10);transition:transform 220ms cubic-bezier(.2,.9,.3,1),box-shadow 220ms}
+
+        /* 'Land' animation: smooth return to original position without overshoot */
+        @keyframes land { from { transform: translateY(-8px); } to { transform: translateY(0); } }
+        .card.land { animation: land 220ms cubic-bezier(0.22, 0.9, 0.36, 1); }
+        .icon-btn.land { animation: land 200ms cubic-bezier(0.22, 0.9, 0.36, 1); }
+
+        /* faint mouse-position reflection for pill */
+        .pill{overflow:hidden}
+        .pill::before{
+            content:'';position:absolute;left:0;top:0;right:0;bottom:0;border-radius:40px;pointer-events:none;z-index:1;mix-blend-mode:screen;
+            background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.42) 16%, rgba(255,255,255,0.18) 34%, rgba(255,255,255,0.06) 60%, transparent 76%);
+            opacity:var(--pill-ref-opacity,0);transition:opacity 420ms ease, transform 260ms ease;filter:blur(8px);
         }
-        .feature-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .feature-desc {
-            font-size: 1rem;
-            color: #5a7bbd;
-        }
-        .cta {
-            display: flex;
-            justify-content: center;
-            margin-top: 2.5rem;
-        }
-        .cta-btn {
-            background: linear-gradient(90deg, #3a7bd5 0%, #6ec6ff 100%);
-            color: #fff;
-            border: none;
-            border-radius: 2rem;
-            padding: 1rem 2.5rem;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 16px 0 rgba(58, 123, 213, 0.10);
-            transition: background 0.2s, transform 0.2s;
-        }
-        .cta-btn:hover {
-            background: linear-gradient(90deg, #6ec6ff 0%, #3a7bd5 100%);
-            transform: scale(1.04);
-        }
-        
-        .menu-bar {
-            background: #fff;
-            border-bottom: 1px solid #e3f0ff;
-            padding: 1rem 0;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 8px 0 rgba(58, 123, 213, 0.06);
-        }
-        
-        .menu-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            padding: 0 2rem;
-        }
-        
-        .quick-create {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .quick-create-btn {
-            background: linear-gradient(90deg, #3a7bd5 0%, #6ec6ff 100%);
-            color: #fff;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: background 0.2s, transform 0.2s;
-        }
-        
-        .quick-create-btn:hover {
-            background: linear-gradient(90deg, #6ec6ff 0%, #3a7bd5 100%);
-            transform: scale(1.02);
-        }
-        
-        .recent-flashcards {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .recent-label {
-            font-weight: 600;
-            color: #3a7bd5;
-            white-space: nowrap;
-        }
-        
-        .recent-items {
-            display: flex;
-            gap: 0.5rem;
-            overflow-x: auto;
-            flex: 1;
-            padding: 0.25rem 0;
-        }
-        
-        .recent-item {
-            background: #f0f7ff;
-            border: 1px solid #e3f0ff;
-            border-radius: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
-            color: #3a7bd5;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-        }
-        
-        .recent-item:hover {
-            background: #e3f0ff;
-            transform: scale(1.02);
-        }
-        
-        @media (max-width: 700px) {
-            .container {
-                flex-direction: column;
-                padding: 1.5rem 0.5rem 2rem 0.5rem;
-            }
-            
-            .menu-container {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 0 1rem;
-            }
-            
-            .recent-flashcards {
-                width: 100%;
-            }
-        }
+        .pill::after{z-index:2}
+        .pill > span{position:relative;z-index:3}
     </style>
-</head>
-<body>
-    <header>
-        <h1>Study Space</h1>
-        <p>Създавай, учи и споделяй флашкарти лесно и удобно!</p>
-    </header>
-    
-    <div class="menu-bar">
-        <div class="menu-container">
-            <div class="quick-create">
-                <button class="quick-create-btn">
-                    <span>➕</span>
-                    Нова флашкарта
-                </button>
-            </div>
-            
-            <div class="recent-flashcards">
-                <div class="recent-label">Скорошни:</div>
-                <div class="recent-items">
-                    <div class="recent-item">Математика - Производни</div>
-                    <div class="recent-item">История - Възраждане</div>
-                    <div class="recent-item">Английски - Irregular Verbs</div>
-                    <div class="recent-item">Биология - Клетка</div>
-                    <div class="recent-item">Физика - Механика</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <main>
-        <div class="container">
-            <div class="feature">
-                <div class="feature-icon">📝</div>
-                <div class="feature-title">Лесно създаване</div>
-                <div class="feature-desc">Създавай флашкарти за секунди с интуитивен интерфейс.</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🔄</div>
-                <div class="feature-title">Учи ефективно</div>
-                <div class="feature-desc">Използвай различни режими за учене и следи напредъка си.</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🤝</div>
-                <div class="feature-title">Споделяй с други</div>
-                <div class="feature-desc">Споделяй своите флашкарти с приятели и общността.</div>
-            </div>
-        </div>
-        <div class="cta">
-            <button class="cta-btn">Започни сега</button>
-        </div>
-    </main>
+ </head>
+ <body>
+     <div class="frame">
+         <div class="topbar">
+             <div class="icon-btn" title="Settings">⚙️</div>
+
+             <div class="center-pill">
+                 <div class="pill" aria-hidden="false">
+                     <span id="date">10 Oct 2025</span>
+                     <span id="time">10:48</span>
+                 </div>
+             </div>
+
+             <div class="icon-btn" title="Profile">
+                 <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(90deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">BC</div>
+             </div>
+         </div>
+
+         <div class="cards-wrap">
+             <div class="cards">
+                 <div class="card add" role="button" aria-label="Добави нова колекция">
+                     <div class="card-content" style="text-align:center">
+                         <div class="plus">＋</div>
+                         <div class="label">Нова</div>
+                     </div>
+                 </div>
+
+                 <div class="card">
+                     <div class="card-content" style="text-align:center">
+                         <div style="font-size:14px;font-weight:800">Последно използвани</div>
+                         <div class="label">карта</div>
+                     </div>
+                 </div>
+
+                 <div class="card">
+                     <div class="card-content" style="text-align:center">
+                         <div style="font-size:14px;font-weight:800">Последно използвани</div>
+                         <div class="label">карта</div>
+                     </div>
+                 </div>
+
+                 <!-- extra placeholders to show adaptive flow -->
+                 <div class="card">
+                     <div class="card-content" style="text-align:center;color:var(--muted)">Още</div>
+                 </div>
+              </div>
+          </div>
+      </div>
+
+      <script>
+        // simple date/time filling
+        function updateDateTime(){
+            const d=new Date();
+            const opts={day:'2-digit',month:'short',year:'numeric'};
+            document.getElementById('date').textContent = d.toLocaleDateString('bg-BG',opts);
+            document.getElementById('time').textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
+        updateDateTime();
+        setInterval(updateDateTime,60000);
+    </script>
+
+    <script>
+        // Add 'lift' on mouseenter and 'land' on mouseleave for cards and icon buttons
+        (function(){
+            if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const els = document.querySelectorAll('.card, .icon-btn');
+            els.forEach(el=>{
+                el.addEventListener('mouseenter', ()=>{
+                    el.classList.remove('land');
+                    el.classList.add('lift');
+                });
+                el.addEventListener('mouseleave', ()=>{
+                    // on leave, remove lift and run land animation once
+                    el.classList.remove('lift');
+                    // force reflow so animation can replay reliably
+                    void el.offsetWidth;
+                    el.classList.add('land');
+                });
+                // Clean up class when animation ends
+                el.addEventListener('animationend', (ev)=>{
+                    // only remove when our land animation finishes
+                    if(ev.animationName && ev.animationName.indexOf('land')!==-1){
+                        el.classList.remove('land');
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        // single-run sheen control for icon buttons and cards
+        (function(){
+            if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const targets = document.querySelectorAll('.icon-btn, .card');
+            function finishOutgoing(){
+                document.querySelectorAll('.sheen-back').forEach(el=>{
+                    // force it to its end state, then remove classes shortly after
+                    el.classList.add('sheen-end');
+                    // force reflow so styles apply
+                    void el.offsetWidth;
+                    setTimeout(()=> el.classList.remove('sheen-back','sheen-end'), 50);
+                });
+            }
+            function addOnce(el, cls){
+                // finish any outgoing sheen animations first so they don't linger
+                finishOutgoing();
+                el.classList.remove('sheen-run','sheen-back');
+                // force reflow
+                void el.offsetWidth;
+                el.classList.add(cls);
+            }
+            targets.forEach(el=>{
+                el.addEventListener('mouseenter', ()=> addOnce(el,'sheen-run'));
+                el.addEventListener('mouseleave', ()=> addOnce(el,'sheen-back'));
+                el.addEventListener('animationend', (ev)=>{
+                    // only remove when our sheen animation finishes
+                    if(ev.animationName && ev.animationName.indexOf('button-sheen')!==-1){
+                        el.classList.remove('sheen-run','sheen-back');
+                    }
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        // reflection: update --mx/--my and fade the reflection according to pointer
+        (function(){
+            if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const btns = document.querySelectorAll('.icon-btn');
+            btns.forEach(btn=>{
+                btn.addEventListener('mousemove', (e)=>{
+                    const r = btn.getBoundingClientRect();
+                    const x = ((e.clientX - r.left)/r.width)*100;
+                    const y = ((e.clientY - r.top)/r.height)*100;
+                    btn.style.setProperty('--mx', x + '%');
+                    btn.style.setProperty('--my', y + '%');
+                    btn.style.setProperty('--ref-opacity', '0.9');
+                });
+                btn.addEventListener('mouseenter', ()=> btn.style.setProperty('--ref-opacity','0.9'));
+                btn.addEventListener('mouseleave', ()=> btn.style.setProperty('--ref-opacity','0'));
+            });
+
+            // pill reflection
+            const pills = document.querySelectorAll('.pill');
+            pills.forEach(pill=>{
+                pill.addEventListener('mousemove', (e)=>{
+                    const r = pill.getBoundingClientRect();
+                    const x = ((e.clientX - r.left)/r.width)*100;
+                    const y = ((e.clientY - r.top)/r.height)*100;
+                    pill.style.setProperty('--mx', x + '%');
+                    pill.style.setProperty('--my', y + '%');
+                    pill.style.setProperty('--pill-ref-opacity', '0.85');
+                });
+                pill.addEventListener('mouseenter', ()=> pill.style.setProperty('--pill-ref-opacity','0.85'));
+                pill.addEventListener('mouseleave', ()=> pill.style.setProperty('--pill-ref-opacity','0'));
+            });
+        })();
+    </script>
 </body>
 </html>
-
