@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Study Space</title>
+</head>
+<body>
+  <h2>Welcome to your Dashboard</h2>
+  <button id="logoutBtn">Log Out</button>
+
+  <div id="flashcards"><h1>YOU sOME HOW MADE IT</h1></div>
+
+  <script type="module">
+    // ✅ Import Firebase (same version everywhere)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // ✅ Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqTfs6fcFu3IkNj38ravDx5t_AuPg6v0c",
+      authDomain: "study-space-cd96c.firebaseapp.com",
+      projectId: "study-space-cd96c",
+      storageBucket: "study-space-cd96c.appspot.com",
+      messagingSenderId: "1060195743315",
+      appId: "1:1060195743315:web:2f7c3f132e6924525a38a6",
+      measurementId: "G-6CP5WMC38R"
+    };
+
+    // ✅ Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ✅ Get page elements
+    const flashcardsDiv = document.getElementById("flashcards");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // ✅ Check if user is logged in
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          flashcardsDiv.innerHTML = `
+            <h3>Your flashcards:</h3>
+            <pre>${JSON.stringify(data.flashcards, null, 2)}</pre>
+          `;
+        } else {
+          flashcardsDiv.innerHTML = "<p>No flashcards found.</p>";
+        }
+      } else {
+        // If not logged in, go back to login
+        window.location.href = "log-in.html";
+      }
+    });
+
+    // ✅ Log out
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      alert("Logged out successfully!");
+      window.location.href = "log-in.html";
+    });
+  </script>
+</body>
+</html>
+
+
