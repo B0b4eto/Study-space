@@ -1,15 +1,265 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Space - Регистрация</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#e6f2ff;
+            --glass-1: rgba(255,255,255,0.65);
+            --glass-2: rgba(230,245,255,0.40);
+            --accent:#0b63c7;
+            --accent-2:#009fe6;
+            --accent-dark:#05294a;
+            --muted:#6b87b7;
+            --soft:#f6fbff;
+            --frame-pad:clamp(14px,2.2vw,28px);
+            --gap:clamp(10px,1.4vw,18px);
+        }
+
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;
+            font-family:'Montserrat',Arial,sans-serif;
+            background: linear-gradient(180deg, rgba(32, 102, 255, 0.72), rgba(255, 255, 255, 0.5)),
+                       url('assets/bg-silk.jpg') center/cover no-repeat;
+            color:var(--accent-dark);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            min-height:100vh;
+            padding:20px;
+        }
+
+        .container {
+            width: clamp(300px, 90vw, 600px);
+            max-width: 95vw;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4), rgba(240,250,255,0.18));
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: clamp(20px, 3vw, 32px);
+            padding: clamp(30px, 6vw, 60px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(45,80,150,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 50%;
+            border-radius: clamp(20px, 3vw, 32px);
+            pointer-events: none;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+            mix-blend-mode: overlay;
+            opacity: 0.9;
+        }
+
+        /* Mouse reflection effect for container */
+        .container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: clamp(20px, 3vw, 32px);
+            pointer-events: none;
+            z-index: 1;
+            mix-blend-mode: screen;
+            background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.40) 18%, rgba(255,255,255,0.18) 36%, rgba(255,255,255,0.04) 60%, transparent 75%);
+            opacity: var(--ref-opacity,0);
+            transition: opacity 360ms ease, transform 260ms ease;
+            filter: blur(6px);
+        }
+
+        .container > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0 0 clamp(25px, 5vw, 40px) 0;
+            font-size: clamp(24px, 5vw, 36px);
+            font-weight: 800;
+            color: var(--accent-dark);
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-group {
+            margin-bottom: clamp(18px, 3.5vw, 28px);
+            position: relative;
+            z-index: 2;
+        }
+
+        input {
+            width: 100%;
+            padding: clamp(14px, 3vw, 20px) clamp(16px, 3.5vw, 24px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: clamp(12px, 2.5vw, 18px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(245,250,255,0.1));
+            backdrop-filter: blur(8px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(14px, 2.8vw, 18px);
+            color: var(--accent-dark);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: var(--muted);
+        }
+
+        input:focus {
+            border-color: rgba(255,255,255,0.6);
+            background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(245,250,255,0.15));
+            box-shadow: 0 8px 25px rgba(45,80,150,0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: clamp(16px, 3.5vw, 24px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: clamp(12px, 2.5vw, 18px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(245,250,255,0.1));
+            backdrop-filter: blur(8px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(16px, 3vw, 20px);
+            font-weight: 700;
+            color: var(--accent-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: clamp(12px, 2.5vw, 18px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -80%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.12), rgba(255,255,255,0));
+            transform: skewX(-20deg) translateX(0);
+            opacity: 0;
+            transition: transform 620ms cubic-bezier(.2,.9,.3,1), opacity 220ms;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: clamp(12px, 2.5vw, 18px);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(6,40,90,0.15);
+            border-color: rgba(255,255,255,0.5);
+            background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(245,250,255,0.15));
+        }
+
+        .btn:hover::before {
+            transform: skewX(-20deg) translateX(220%);
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn > span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: clamp(20px, 4vw, 35px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-link p {
+            font-size: clamp(14px, 2.5vw, 16px);
+        }
+
+        .auth-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-link a:hover {
+            color: var(--accent-2);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: clamp(25px, 6vw, 40px) clamp(20px, 5vw, 35px);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 650px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn::before {
+                transition: none;
+                opacity: 0;
+            }
+            input:focus {
+                transform: none;
+            }
+            .btn:hover {
+                transform: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h2>Create an Account</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="signupBtn">Sign Up</button>
+    <div class="container">
+        <h2>Създай акаунт</h2>
+        <form>
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Имейл адрес" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Парола" required>
+            </div>
+            <button type="button" class="btn" id="signupBtn">
+                <span>Регистрация</span>
+            </button>
+        </form>
+        <div class="auth-link">
+            <p style="color: var(--muted); margin: 0;">Вече имаш акаунт? <a href="login.html">Влез тук</a></p>
+        </div>
+    </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
@@ -21,7 +271,7 @@
       apiKey: "AIzaSyDqTfs6fcFu3IkNj38ravDx5t_AuPg6v0c",
       authDomain: "study-space-cd96c.firebaseapp.com",
       projectId: "study-space-cd96c",
-        storageBucket: "study-space-cd96c.appspot.com",
+      storageBucket: "study-space-cd96c.appspot.com",
       messagingSenderId: "1060195743315",
       appId: "1:1060195743315:web:2f7c3f132e6924525a38a6",
       measurementId: "G-6CP5WMC38R"
@@ -36,18 +286,83 @@
     const signupBtn = document.getElementById("signupBtn");
 
     signupBtn.addEventListener("click", async () => {
-      const email = emailInput.value;
+      const email = emailInput.value.trim();
       const password = passwordInput.value;
 
+      if (!email || !password) {
+        alert("Моля, попълнете всички полета.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Паролата трябва да е поне 6 символа.");
+        return;
+      }
+
       try {
+        // Add loading state
+        signupBtn.disabled = true;
+        signupBtn.innerHTML = '<span>Създаване...</span>';
+        
         const userCred = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", userCred.user.uid), { flashcards: [] });
-        alert("Account created! You can now log in.");
+        
+        alert("Акаунтът е създаден успешно! Можете да се логнете.");
         window.location.href = "login.html";
       } catch (error) {
-        alert(error.message);
+        console.error("Registration error:", error);
+        let errorMessage = "Възникна грешка при регистрацията.";
+        
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = "Този имейл вече се използва.";
+            break;
+          case 'auth/invalid-email':
+            errorMessage = "Невалиден имейл адрес.";
+            break;
+          case 'auth/weak-password':
+            errorMessage = "Паролата е твърде слаба.";
+            break;
+        }
+        
+        alert(errorMessage);
+      } finally {
+        // Reset button state
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = '<span>Регистрация</span>';
       }
     });
+
+    // Add Enter key support
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        signupBtn.click();
+      }
+    });
+
+    // Mouse reflection effect for container
+    (function(){
+      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      
+      const container = document.querySelector('.container');
+      
+      container.addEventListener('mousemove', (e) => {
+        const r = container.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width) * 100;
+        const y = ((e.clientY - r.top) / r.height) * 100;
+        container.style.setProperty('--mx', x + '%');
+        container.style.setProperty('--my', y + '%');
+        container.style.setProperty('--ref-opacity', '0.9');
+      });
+      
+      container.addEventListener('mouseenter', () => {
+        container.style.setProperty('--ref-opacity', '0.9');
+      });
+      
+      container.addEventListener('mouseleave', () => {
+        container.style.setProperty('--ref-opacity', '0');
+      });
+    })();
   </script>
 </body>
 </html>
