@@ -160,6 +160,827 @@
         }
         .pill::after{z-index:2}
         .pill > span{position:relative;z-index:3}
+
+        /* Custom Blocks Styles */
+        .custom-blocks-wrap {
+            margin-top: calc(var(--gap) * 2);
+            padding: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--gap);
+            padding: 0 8px;
+        }
+
+        .section-title {
+            font-size: clamp(18px, 2.2vw, 24px);
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin: 0;
+        }
+
+        .edit-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(245,250,255,0.08));
+            backdrop-filter: blur(8px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .edit-btn::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -80%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.9), rgba(255,255,255,0.12), rgba(255,255,255,0));
+            transform: skewX(-20deg) translateX(0);
+            opacity: 0;
+            transition: transform 620ms cubic-bezier(.2,.9,.3,1), opacity 220ms;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .edit-btn:hover::before {
+            transform: skewX(-20deg) translateX(220%);
+            opacity: 1;
+        }
+
+        .edit-btn > span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6,40,90,0.12);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .edit-btn.active {
+            background: linear-gradient(180deg, var(--accent-2), var(--accent));
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .edit-btn.active:hover {
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+        }
+
+        .custom-blocks {
+            display: block; /* Always use block layout for absolute positioning */
+            position: relative;
+            gap: var(--gap);
+            width: 100%;
+            transition: all 0.3s ease;
+            min-height: 400px; /* Ensure minimum container height */
+        }
+
+        /* Grid mode for free positioning */
+        .custom-blocks.edit-mode {
+            position: relative;
+            min-height: 600px;
+            max-height: none; /* Allow unlimited height expansion */
+            background-image: radial-gradient(circle, rgba(107, 135, 183, 0.3) 2px, transparent 2px);
+            background-size: 20px 20px;
+            background-position: 0 0;
+            display: block; /* Change from grid to block for free positioning */
+            animation: gridFadeIn 0.3s ease;
+            overflow: visible; /* Allow content to extend beyond initial bounds */
+            transition: min-height 0.3s ease; /* Smooth height transitions */
+        }
+
+        @keyframes gridFadeIn {
+            from { 
+                background-image: none;
+                background-size: 0;
+            }
+            to { 
+                background-image: radial-gradient(circle, rgba(107, 135, 183, 0.3) 2px, transparent 2px);
+                background-size: 20px 20px;
+            }
+        }
+
+        @keyframes gridFadeOut {
+            from { 
+                background-image: radial-gradient(circle, rgba(107, 135, 183, 0.3) 2px, transparent 2px);
+                background-size: 20px 20px;
+            }
+            to { 
+                background-image: none;
+                background-size: 0;
+            }
+        }
+
+        .custom-blocks.edit-mode-exit {
+            animation: gridFadeOut 0.3s ease;
+        }
+
+        .custom-block {
+            padding: 20px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(245,250,255,0.08));
+            border: 1px solid rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 32px rgba(2,18,40,0.08);
+            position: absolute; /* Always use absolute positioning */
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            resize: none; /* Disabled by default */
+            min-width: 280px;
+            min-height: 180px;
+            max-width: calc(100vw - 80px);
+            z-index: 1;
+        }
+
+        /* Edit mode styles */
+        .custom-blocks.edit-mode {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+
+        .custom-block.edit-mode {
+            cursor: move;
+            border: 2px dashed var(--accent-2);
+            background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(245,250,255,0.15));
+            resize: both;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            z-index: 10; /* Higher z-index in edit mode */
+        }
+
+        /* Remove the static positioning rule since we always use absolute now */
+
+        /* Resizing state - smooth highlight with gentle transitions */
+        .custom-block.resizing {
+            border: 2px solid var(--accent);
+            background: linear-gradient(180deg, rgba(11, 99, 199, 0.15), rgba(0, 159, 230, 0.08));
+            box-shadow: 0 0 0 2px rgba(11, 99, 199, 0.2), 0 12px 32px rgba(2,18,40,0.12);
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        /* Smooth transitions during resize operation */
+        .custom-blocks.resizing-active .custom-block {
+            transition: opacity 0.2s ease;
+        }
+
+        .custom-blocks.resizing-active .custom-block:not(.resizing) {
+            opacity: 0.75;
+        }
+
+        /* Grid snap indicator */
+        .custom-block.edit-mode.snapping {
+            box-shadow: 0 0 0 2px rgba(11, 99, 199, 0.4), 0 12px 32px rgba(2,18,40,0.12);
+        }
+
+        .custom-block.edit-mode::after {
+            content: '⋮⋮';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 16px;
+            color: var(--accent);
+            font-weight: bold;
+            line-height: 0.8;
+            letter-spacing: -2px;
+        }
+
+        .custom-block.dragging {
+            opacity: 0.7;
+            transform: rotate(3deg) scale(1.05);
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(2,18,40,0.25);
+        }
+
+        /* Resize handle */
+        .custom-block.edit-mode::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(-45deg, transparent 0%, transparent 30%, var(--accent) 30%, var(--accent) 35%, transparent 35%, transparent 65%, var(--accent) 65%, var(--accent) 70%, transparent 70%);
+            cursor: nw-resize;
+            z-index: 10;
+            border-radius: 0 0 16px 0;
+        }
+
+        /* Drop zone indicator */
+        .custom-block.drop-zone {
+            border: 2px dashed var(--accent);
+            background: linear-gradient(180deg, rgba(11, 99, 199, 0.1), rgba(0, 159, 230, 0.05));
+        }
+
+        .custom-block::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: -80%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.12), rgba(255,255,255,0));
+            transform: skewX(-20deg) translateX(0);
+            opacity: 0;
+            transition: transform 620ms cubic-bezier(.2,.9,.3,1), opacity 220ms;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 16px;
+        }
+
+        .custom-block:hover::before {
+            transform: skewX(-20deg) translateX(220%);
+            opacity: 1;
+        }
+
+        .custom-block > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .block-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .block-icon {
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .block-header h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-dark);
+        }
+
+        .block-content {
+            font-size: 14px;
+            color: var(--accent-dark);
+        }
+
+        /* Calendar Block */
+        .calendar-preview {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .calendar-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+            border-radius: 12px;
+            padding: 12px;
+            min-width: 60px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .calendar-date .day {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .calendar-date .month {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .calendar-events {
+            flex: 1;
+        }
+
+        .event {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Homework Block */
+        .homework-list {
+            margin-bottom: 12px;
+        }
+
+        .homework-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 6px 0;
+        }
+
+        .homework-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.2);
+            appearance: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .homework-item input[type="checkbox"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .homework-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .homework-item label {
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .homework-item input:checked + label {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .homework-progress {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Curriculum Block */
+        .subject-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .subject {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .subject-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-dark);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Add Block Button */
+        .add-block-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(11, 99, 199, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none; /* Hidden by default */
+        }
+
+        .add-block-btn.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-block-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(11, 99, 199, 0.5);
+        }
+
+        /* Delete button for blocks */
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 15;
+            display: none; /* Hidden by default */
+        }
+
+        .custom-block.edit-mode .delete-btn {
+            display: flex; /* Show only in edit mode */
+        }
+
+        .custom-block.edit-mode .delete-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        /* Block selection modal */
+        .block-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .block-selector-content {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(240,250,255,0.8));
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .block-selector-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-dark);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .block-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .block-option {
+            padding: 20px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(245,250,255,0.3));
+            border: 1px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .block-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(11, 99, 199, 0.15);
+            border-color: var(--accent-2);
+        }
+
+        .block-option-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .block-option-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-dark);
+            margin-bottom: 5px;
+        }
+
+        .block-option-desc {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* New Block Types Styles */
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding: 6px 0;
+        }
+
+        .reminder-item input[type="text"] {
+            flex: 1;
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+            color: var(--accent-dark);
+        }
+
+        .reminder-item input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-2);
+            background: rgba(255,255,255,0.4);
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .music-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--accent);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+        }
+
+        .music-btn.play {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+
+        .song-info {
+            text-align: center;
+            font-size: 12px;
+            color: var(--accent-dark);
+        }
+
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .weather-icon {
+            font-size: 32px;
+            line-height: 1;
+        }
+
+        .weather-details {
+            flex: 1;
+        }
+
+        .weather-temp {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .weather-desc {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .quote-text {
+            font-size: 14px;
+            font-style: italic;
+            color: var(--accent-dark);
+            line-height: 1.4;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .quote-author {
+            font-size: 12px;
+            color: var(--muted);
+            text-align: right;
+        }
+
+        .link-input {
+            width: 100%;
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            color: var(--accent-dark);
+            margin-bottom: 10px;
+        }
+
+        .link-input:focus {
+            outline: none;
+            border-color: var(--accent-2);
+            background: rgba(255,255,255,0.4);
+        }
+
+        .link-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(11, 99, 199, 0.3);
+        }
+
+        .storage-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .storage-option {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .storage-option.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .storage-link {
+            display: block;
+            padding: 12px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--accent-dark);
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .storage-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments for custom blocks */
+        @media (max-width: 768px) {
+            .custom-blocks {
+                grid-template-columns: 1fr;
+            }
+            
+            .custom-blocks.edit-mode {
+                background-size: 15px 15px; /* Smaller grid for mobile */
+                min-height: 400px;
+            }
+            
+            .custom-block {
+                min-width: 100%;
+                resize: vertical;
+            }
+            
+            .custom-block.edit-mode {
+                max-width: calc(100vw - 40px); /* Adjust for mobile */
+            }
+            
+            .calendar-preview {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .calendar-date {
+                align-self: flex-start;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .edit-btn {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .custom-blocks.edit-mode {
+                background-size: 12px 12px; /* Even smaller grid for small phones */
+                min-height: 300px;
+            }
+            
+            .custom-block {
+                padding: 16px;
+                min-width: 100%;
+                resize: none;
+            }
+            
+            .custom-block.edit-mode {
+                max-width: calc(100vw - 20px);
+                min-width: 250px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+            }
+
+            .section-header {
+                padding: 0 4px;
+            }
+
+            .custom-block.edit-mode::after {
+                font-size: 14px;
+                top: 6px;
+                right: 6px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .custom-block.edit-mode {
+                touch-action: none;
+            }
+            
+            .custom-block.edit-mode::before {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
  </head>
  <body>
@@ -208,6 +1029,138 @@
                  </div>
               </div>
           </div>
+
+          <!-- Custom Blocks Section -->
+          <div class="custom-blocks-wrap">
+              <div class="section-header">
+                  <h3 class="section-title">Персонализирани блокове</h3>
+                  <button class="edit-btn" id="editBlocksBtn">
+                      <span>Редактиране</span>
+                  </button>
+              </div>
+              <div class="custom-blocks" id="customBlocks">
+                  <div class="custom-block calendar-block" role="button" aria-label="Календар" data-block-id="calendar">
+                      <button class="delete-btn" title="Изтрий блок">×</button>
+                      <div class="block-header">
+                          <div class="block-icon">📅</div>
+                          <h4>Календар</h4>
+                      </div>
+                      <div class="block-content">
+                          <div class="calendar-preview">
+                              <div class="calendar-date">
+                                  <span class="day" id="calendar-day">09</span>
+                                  <span class="month">Окт</span>
+                              </div>
+                              <div class="calendar-events">
+                                  <div class="event">📚 Математика - 14:00</div>
+                                  <div class="event">📖 История - 16:30</div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="custom-block homework-block" role="button" aria-label="Домашни" data-block-id="homework">
+                      <button class="delete-btn" title="Изтрий блок">×</button>
+                      <div class="block-header">
+                          <div class="block-icon">📝</div>
+                          <h4>Домашни</h4>
+                      </div>
+                      <div class="block-content">
+                          <div class="homework-list">
+                              <div class="homework-item">
+                                  <input type="checkbox" id="hw1" checked>
+                                  <label for="hw1">Физика - упражнения</label>
+                              </div>
+                              <div class="homework-item">
+                                  <input type="checkbox" id="hw2">
+                                  <label for="hw2">Химия - лабораторен отчет</label>
+                              </div>
+                              <div class="homework-item">
+                                  <input type="checkbox" id="hw3">
+                                  <label for="hw3">Английски - есе</label>
+                              </div>
+                          </div>
+                          <div class="homework-progress">
+                              <span>1 от 3 завършени</span>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="custom-block curriculum-block" role="button" aria-label="Учебна програма" data-block-id="curriculum">
+                      <button class="delete-btn" title="Изтрий блок">×</button>
+                      <div class="block-header">
+                          <div class="block-icon">🎓</div>
+                          <h4>Учебна програма</h4>
+                      </div>
+                      <div class="block-content">
+                          <div class="curriculum-overview">
+                              <div class="subject-progress">
+                                  <div class="subject">
+                                      <span class="subject-name">Математика</span>
+                                      <div class="progress-bar">
+                                          <div class="progress-fill" style="width: 75%"></div>
+                                      </div>
+                                  </div>
+                                  <div class="subject">
+                                      <span class="subject-name">Физика</span>
+                                      <div class="progress-bar">
+                                          <div class="progress-fill" style="width: 60%"></div>
+                                      </div>
+                                  </div>
+                                  <div class="subject">
+                                      <span class="subject-name">Химия</span>
+                                      <div class="progress-bar">
+                                          <div class="progress-fill" style="width: 45%"></div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Add Block Button -->
+      <button class="add-block-btn" id="addBlockBtn">+</button>
+
+      <!-- Block Selector Modal -->
+      <div class="block-selector-modal" id="blockSelectorModal">
+          <div class="block-selector-content">
+              <h3 class="block-selector-title">Изберете тип блок</h3>
+              <div class="block-options">
+                  <div class="block-option" data-block-type="reminder">
+                      <div class="block-option-icon">📝</div>
+                      <div class="block-option-title">Reminder</div>
+                      <div class="block-option-desc">Checklist за напомняния</div>
+                  </div>
+                  <div class="block-option" data-block-type="music">
+                      <div class="block-option-icon">🎵</div>
+                      <div class="block-option-title">Музика</div>
+                      <div class="block-option-desc">Музикален плейър</div>
+                  </div>
+                  <div class="block-option" data-block-type="storage">
+                      <div class="block-option-icon">☁️</div>
+                      <div class="block-option-title">Cloud Storage</div>
+                      <div class="block-option-desc">Dropbox / Google Drive</div>
+                  </div>
+                  <div class="block-option" data-block-type="weather">
+                      <div class="block-option-icon">🌤️</div>
+                      <div class="block-option-title">Време</div>
+                      <div class="block-option-desc">Прогноза за времето</div>
+                  </div>
+                  <div class="block-option" data-block-type="quote">
+                      <div class="block-option-icon">💭</div>
+                      <div class="block-option-title">Мотивация</div>
+                      <div class="block-option-desc">Quote на деня</div>
+                  </div>
+                  <div class="block-option" data-block-type="link">
+                      <div class="block-option-icon">🔗</div>
+                      <div class="block-option-title">Линк</div>
+                      <div class="block-option-desc">Персонализиран линк</div>
+                  </div>
+              </div>
+          </div>
       </div>
 
       <script>
@@ -217,9 +1170,745 @@
             const opts={day:'2-digit',month:'short',year:'numeric'};
             document.getElementById('date').textContent = d.toLocaleDateString('bg-BG',opts);
             document.getElementById('time').textContent = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+            
+            // Update calendar day
+            document.getElementById('calendar-day').textContent = d.getDate().toString().padStart(2, '0');
         }
         updateDateTime();
         setInterval(updateDateTime,60000);
+    </script>
+
+    <script>
+        // Custom blocks functionality
+        (function(){
+            let editMode = false;
+            let draggedElement = null;
+            let dragOffset = { x: 0, y: 0 };
+            let isResizing = false;
+            let resizeObserver = null;
+            let originalDimensions = new Map(); // Store original dimensions
+            let originalPositions = new Map(); // Store original positions
+            const gridSize = 20; // Grid snap size
+
+            const editBtn = document.getElementById('editBlocksBtn');
+            const customBlocks = document.getElementById('customBlocks');
+            const addBlockBtn = document.getElementById('addBlockBtn');
+            const blockSelectorModal = document.getElementById('blockSelectorModal');
+            let blocks = document.querySelectorAll('.custom-block');
+
+            // Create ResizeObserver for monitoring resize operations
+            if (window.ResizeObserver) {
+                resizeObserver = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const block = entry.target;
+                        if (block.classList.contains('edit-mode')) {
+                            handleBlockResize(block, entry);
+                        }
+                    }
+                });
+            }
+
+            function handleBlockResize(block, entry) {
+                if (!isResizing) {
+                    isResizing = true;
+                    customBlocks.classList.add('resizing-active');
+                    block.classList.add('resizing');
+                    
+                    // Clear any existing timeout
+                    if (block.resizeTimeout) {
+                        clearTimeout(block.resizeTimeout);
+                    }
+                    
+                    // Set timeout to end resize state with smooth transition
+                    block.resizeTimeout = setTimeout(() => {
+                        isResizing = false;
+                        customBlocks.classList.remove('resizing-active');
+                        block.classList.remove('resizing');
+                        
+                        // Save resize dimensions
+                        saveBlockDimensions(block);
+                    }, 300); // Increased timeout for smoother experience
+                }
+
+                // Smooth dimension enforcement
+                const minWidth = 280;
+                const minHeight = 180;
+                const currentWidth = block.offsetWidth;
+                const currentHeight = block.offsetHeight;
+
+                // Only enforce if significantly below minimum to avoid jittery behavior
+                if (currentWidth < minWidth - 10 || currentHeight < minHeight - 10) {
+                    requestAnimationFrame(() => {
+                        if (currentWidth < minWidth - 10) {
+                            block.style.width = minWidth + 'px';
+                        }
+                        if (currentHeight < minHeight - 10) {
+                            block.style.height = minHeight + 'px';
+                        }
+                    });
+                }
+            }
+
+            function saveBlockDimensions(block) {
+                const blockId = block.getAttribute('data-block-id');
+                const rect = block.getBoundingClientRect();
+                const dimensions = {
+                    width: block.offsetWidth + 'px',
+                    height: block.offsetHeight + 'px'
+                };
+                
+                // Save to localStorage
+                const savedDimensions = JSON.parse(localStorage.getItem('blockDimensions') || '{}');
+                savedDimensions[blockId] = dimensions;
+                localStorage.setItem('blockDimensions', JSON.stringify(savedDimensions));
+                
+                // Update container height if block is near the bottom
+                const blockTop = parseInt(block.style.top) || 0;
+                const blockBottom = blockTop + block.offsetHeight;
+                const currentMinHeight = parseInt(getComputedStyle(customBlocks).minHeight) || 600;
+                if (blockBottom > currentMinHeight - 50) {
+                    customBlocks.style.minHeight = (blockBottom + 100) + 'px';
+                }
+            }
+
+            function storeOriginalDimensions() {
+                // Store current dimensions before entering edit mode
+                blocks.forEach(block => {
+                    const blockId = block.getAttribute('data-block-id');
+                    const rect = block.getBoundingClientRect();
+                    const containerRect = customBlocks.getBoundingClientRect();
+                    
+                    originalDimensions.set(blockId, {
+                        width: block.offsetWidth,
+                        height: block.offsetHeight,
+                        computedWidth: getComputedStyle(block).width,
+                        computedHeight: getComputedStyle(block).height
+                    });
+                    
+                    // Store relative position within the container
+                    originalPositions.set(blockId, {
+                        left: rect.left - containerRect.left,
+                        top: rect.top - containerRect.top
+                    });
+                });
+            }
+
+            function restoreOriginalLayout() {
+                // Don't restore to grid layout - maintain absolute positioning with saved positions
+                blocks.forEach(block => {
+                    const blockId = block.getAttribute('data-block-id');
+                    
+                    // Keep absolute positioning but remove edit-specific styling
+                    block.style.position = 'absolute';
+                    // Don't clear left and top - keep the positions!
+                    block.style.zIndex = '1';
+                    
+                    // Restore saved dimensions if they exist
+                    const savedDimensions = JSON.parse(localStorage.getItem('blockDimensions') || '{}');
+                    if (savedDimensions[blockId]) {
+                        block.style.width = savedDimensions[blockId].width;
+                        block.style.height = savedDimensions[blockId].height;
+                    }
+                });
+            }
+
+            function snapToGrid(value) {
+                return Math.round(value / gridSize) * gridSize;
+            }
+
+            function enforceScreenLimits(block, left, top) {
+                const containerRect = customBlocks.getBoundingClientRect();
+                const blockWidth = block.offsetWidth;
+                
+                // Only enforce horizontal limits - allow free vertical movement
+                const maxLeft = containerRect.width - blockWidth;
+                
+                left = Math.max(0, Math.min(left, maxLeft));
+                top = Math.max(0, top); // Only prevent going above container, no bottom limit
+                
+                // Dynamically expand container height if needed
+                const blockBottom = top + block.offsetHeight;
+                const currentMinHeight = parseInt(getComputedStyle(customBlocks).minHeight) || 600;
+                if (blockBottom > currentMinHeight - 50) {
+                    customBlocks.style.minHeight = (blockBottom + 100) + 'px';
+                }
+                
+                return { left, top };
+            }
+
+            function loadBlockDimensions() {
+                const savedDimensions = JSON.parse(localStorage.getItem('blockDimensions') || '{}');
+                
+                blocks.forEach(block => {
+                    const blockId = block.getAttribute('data-block-id');
+                    if (savedDimensions[blockId]) {
+                        const dims = savedDimensions[blockId];
+                        if (dims.width) block.style.width = dims.width;
+                        if (dims.height) block.style.height = dims.height;
+                    }
+                });
+            }
+
+            function loadBlockPositions() {
+                const savedPositions = JSON.parse(localStorage.getItem('blockPositions') || '{}');
+                
+                blocks.forEach((block, index) => {
+                    const blockId = block.getAttribute('data-block-id');
+                    if (savedPositions[blockId]) {
+                        // Use saved positions
+                        const pos = savedPositions[blockId];
+                        block.style.left = pos.left + 'px';
+                        block.style.top = pos.top + 'px';
+                    } else {
+                        // Initialize with default grid-like positions
+                        const cols = Math.floor(customBlocks.offsetWidth / 320);
+                        const row = Math.floor(index / cols);
+                        const col = index % cols;
+                        block.style.left = snapToGrid(col * 320) + 'px';
+                        block.style.top = snapToGrid(row * 200) + 'px';
+                        
+                        // Save the initial position
+                        saveBlockPosition(block);
+                    }
+                });
+                
+                // Update container height to fit all blocks
+                updateContainerHeight();
+            }
+
+            function updateContainerHeight() {
+                let maxBottom = 600; // minimum height
+                blocks.forEach(block => {
+                    const top = parseInt(block.style.top) || 0;
+                    const height = block.offsetHeight || 180;
+                    const bottom = top + height;
+                    if (bottom > maxBottom) {
+                        maxBottom = bottom;
+                    }
+                });
+                customBlocks.style.minHeight = (maxBottom + 50) + 'px';
+            }
+
+            // Toggle edit mode
+            editBtn.addEventListener('click', () => {
+                editMode = !editMode;
+                toggleEditMode();
+            });
+
+            function toggleEditMode() {
+                if (editMode) {
+                    // Store original dimensions and positions before entering edit mode
+                    storeOriginalDimensions();
+                    
+                    editBtn.classList.add('active');
+                    editBtn.innerHTML = '<span>Готово</span>';
+                    customBlocks.classList.add('edit-mode');
+                    addBlockBtn.classList.add('show');
+                    
+                    // Convert to absolute positioning
+                    blocks.forEach((block, index) => {
+                        const blockId = block.getAttribute('data-block-id');
+                        block.classList.add('edit-mode');
+                        enableDragAndDrop(block);
+                        enableResizeMonitoring(block);
+                        
+                        // Positions are already loaded, just ensure they have explicit values
+                        if (!block.style.left || !block.style.top) {
+                            // Only set if not already positioned
+                            const savedPositions = JSON.parse(localStorage.getItem('blockPositions') || '{}');
+                            if (savedPositions[blockId]) {
+                                block.style.left = savedPositions[blockId].left + 'px';
+                                block.style.top = savedPositions[blockId].top + 'px';
+                            }
+                        }
+                        
+                        // Apply saved dimensions if not already set
+                        const savedDimensions = JSON.parse(localStorage.getItem('blockDimensions') || '{}');
+                        if (savedDimensions[blockId] && (!block.style.width || !block.style.height)) {
+                            block.style.width = savedDimensions[blockId].width;
+                            block.style.height = savedDimensions[blockId].height;
+                        }
+                    });
+                } else {
+                    editBtn.classList.remove('active');
+                    editBtn.innerHTML = '<span>Редактиране</span>';
+                    addBlockBtn.classList.remove('show');
+                    
+                    // Add exit animation class
+                    customBlocks.classList.add('edit-mode-exit');
+                    
+                    // Wait for animation and then clean up
+                    setTimeout(() => {
+                        customBlocks.classList.remove('edit-mode', 'edit-mode-exit', 'resizing-active');
+                        
+                        // Don't reset container height - keep it based on block positions
+                        updateContainerHeight();
+                        
+                        blocks.forEach(block => {
+                            block.classList.remove('edit-mode', 'resizing', 'snapping');
+                            disableDragAndDrop(block);
+                            disableResizeMonitoring(block);
+                        });
+                        
+                        // Restore layout but keep positions
+                        restoreOriginalLayout();
+                        
+                        // Clean up any resize timeouts
+                        blocks.forEach(block => {
+                            if (block.resizeTimeout) {
+                                clearTimeout(block.resizeTimeout);
+                                delete block.resizeTimeout;
+                            }
+                        });
+                    }, 300);
+                }
+            }
+
+            function enableResizeMonitoring(block) {
+                if (resizeObserver) {
+                    resizeObserver.observe(block);
+                }
+                
+                // Add mouse events for resize detection
+                block.addEventListener('mousedown', handleResizeStart);
+            }
+
+            function disableResizeMonitoring(block) {
+                if (resizeObserver) {
+                    resizeObserver.unobserve(block);
+                }
+                
+                block.removeEventListener('mousedown', handleResizeStart);
+            }
+
+            function handleResizeStart(e) {
+                const block = e.target.closest('.custom-block');
+                if (!block || !block.classList.contains('edit-mode')) return;
+                
+                const rect = block.getBoundingClientRect();
+                const isResizeArea = e.clientX > rect.right - 20 && e.clientY > rect.bottom - 20;
+                
+                if (isResizeArea) {
+                    // Smooth transition into resize mode
+                    block.style.transition = 'border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease';
+                    customBlocks.classList.add('resizing-active');
+                    block.classList.add('resizing');
+                    
+                    // Add mouse up listener to clean up resize state
+                    const cleanup = () => {
+                        block.style.transition = '';
+                        document.removeEventListener('mouseup', cleanup);
+                    };
+                    document.addEventListener('mouseup', cleanup);
+                }
+            }
+
+            function enableDragAndDrop(block) {
+                // Use mouse events for better control in absolute positioning
+                block.addEventListener('mousedown', handleMouseDown);
+            }
+
+            function disableDragAndDrop(block) {
+                block.removeEventListener('mousedown', handleMouseDown);
+            }
+
+            function handleMouseDown(e) {
+                const block = e.target.closest('.custom-block');
+                if (!block || !block.classList.contains('edit-mode')) return;
+                
+                const rect = block.getBoundingClientRect();
+                const containerRect = customBlocks.getBoundingClientRect();
+                
+                // Check if clicking on resize handle
+                const isResizeArea = e.clientX > rect.right - 20 && e.clientY > rect.bottom - 20;
+                if (isResizeArea) return;
+                
+                e.preventDefault();
+                
+                draggedElement = block;
+                block.classList.add('dragging');
+                
+                // Calculate offset from mouse to block position
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+            }
+
+            function handleMouseMove(e) {
+                if (!draggedElement) return;
+                
+                e.preventDefault();
+                
+                const containerRect = customBlocks.getBoundingClientRect();
+                
+                // Calculate new position relative to container
+                let newLeft = e.clientX - containerRect.left - dragOffset.x;
+                let newTop = e.clientY - containerRect.top - dragOffset.y;
+                
+                // Snap to grid
+                newLeft = snapToGrid(newLeft);
+                newTop = snapToGrid(newTop);
+                
+                // Enforce screen limits
+                const limited = enforceScreenLimits(draggedElement, newLeft, newTop);
+                newLeft = limited.left;
+                newTop = limited.top;
+                
+                // Apply position
+                draggedElement.style.left = newLeft + 'px';
+                draggedElement.style.top = newTop + 'px';
+                
+                // Add snapping visual feedback
+                draggedElement.classList.add('snapping');
+            }
+
+            function handleMouseUp(e) {
+                if (!draggedElement) return;
+                
+                draggedElement.classList.remove('dragging', 'snapping');
+                
+                // Save position
+                saveBlockPosition(draggedElement);
+                
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+                
+                draggedElement = null;
+            }
+
+            function saveBlockPosition(block) {
+                const blockId = block.getAttribute('data-block-id');
+                const position = {
+                    left: parseInt(block.style.left) || 0,
+                    top: parseInt(block.style.top) || 0
+                };
+                
+                const savedPositions = JSON.parse(localStorage.getItem('blockPositions') || '{}');
+                savedPositions[blockId] = position;
+                localStorage.setItem('blockPositions', JSON.stringify(savedPositions));
+            }
+
+            function saveBlockOrder() {
+                // In free positioning mode, we don't need traditional order
+                // Instead, we save positions which is handled by saveBlockPosition
+            }
+
+            function loadBlockOrder() {
+                // Legacy function - positions are now handled differently
+                // Keep for backward compatibility but functionality moved to loadBlockPositions
+            }
+
+            // Load saved dimensions and positions on page load
+            loadBlockDimensions();
+            loadBlockPositions();
+
+            // Add Block functionality
+            addBlockBtn.addEventListener('click', () => {
+                if (editMode) {
+                    blockSelectorModal.style.display = 'flex';
+                }
+            });
+
+            // Close modal when clicking outside
+            blockSelectorModal.addEventListener('click', (e) => {
+                if (e.target === blockSelectorModal) {
+                    blockSelectorModal.style.display = 'none';
+                }
+            });
+
+            // Block type selection
+            document.querySelectorAll('.block-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const blockType = option.getAttribute('data-block-type');
+                    createNewBlock(blockType);
+                    blockSelectorModal.style.display = 'none';
+                });
+            });
+
+            function createNewBlock(type) {
+                const blockId = 'block_' + Date.now();
+                const newBlock = document.createElement('div');
+                newBlock.className = 'custom-block';
+                newBlock.setAttribute('data-block-id', blockId);
+                
+                // Position new block in center
+                const centerX = Math.max(0, (customBlocks.offsetWidth - 300) / 2);
+                const centerY = Math.max(0, (customBlocks.offsetHeight - 200) / 2);
+                newBlock.style.left = snapToGrid(centerX) + 'px';
+                newBlock.style.top = snapToGrid(centerY) + 'px';
+                newBlock.style.width = '300px';
+                newBlock.style.height = '200px';
+
+                // Add delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.title = 'Изтрий блок';
+                newBlock.appendChild(deleteBtn);
+
+                // Create content based on type
+                const content = createBlockContent(type);
+                newBlock.appendChild(content);
+
+                // Add to container
+                customBlocks.appendChild(newBlock);
+
+                // Add to blocks collection
+                blocks = document.querySelectorAll('.custom-block');
+
+                // Apply edit mode if active
+                if (editMode) {
+                    newBlock.classList.add('edit-mode');
+                    enableDragAndDrop(newBlock);
+                    enableResizeMonitoring(newBlock);
+                }
+
+                // Save position and dimensions
+                saveBlockPosition(newBlock);
+                saveBlockDimensions(newBlock);
+                updateContainerHeight();
+
+                // Set up block-specific functionality
+                setupBlockFunctionality(newBlock, type);
+            }
+
+            function createBlockContent(type) {
+                const content = document.createElement('div');
+
+                switch(type) {
+                    case 'reminder':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">📝</div>
+                                <h4>Напомняния</h4>
+                            </div>
+                            <div class="block-content">
+                                <div class="reminder-list">
+                                    <div class="reminder-item">
+                                        <input type="checkbox" id="remind1_${Date.now()}">
+                                        <input type="text" placeholder="Добави напомняне..." value="Примерно напомняне">
+                                    </div>
+                                </div>
+                                <button class="link-btn" onclick="addReminderItem(this)">+ Добави</button>
+                            </div>
+                        `;
+                        break;
+
+                    case 'music':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">🎵</div>
+                                <h4>Музика</h4>
+                            </div>
+                            <div class="block-content">
+                                <div class="music-controls">
+                                    <button class="music-btn" onclick="previousTrack()">⏮️</button>
+                                    <button class="music-btn play" onclick="togglePlay()">▶️</button>
+                                    <button class="music-btn" onclick="nextTrack()">⏭️</button>
+                                </div>
+                                <div class="song-info">
+                                    <div style="font-weight: 600;">Няма избрана песен</div>
+                                    <div style="color: var(--muted);">Свържете music streaming сервиз</div>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'storage':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">☁️</div>
+                                <h4>Cloud Storage</h4>
+                            </div>
+                            <div class="block-content">
+                                <div class="storage-options">
+                                    <div class="storage-option active" data-service="dropbox">Dropbox</div>
+                                    <div class="storage-option" data-service="gdrive">Google Drive</div>
+                                </div>
+                                <a href="https://www.dropbox.com" target="_blank" class="storage-link">
+                                    Отвори Dropbox
+                                </a>
+                            </div>
+                        `;
+                        break;
+
+                    case 'weather':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">🌤️</div>
+                                <h4>Време</h4>
+                            </div>
+                            <div class="block-content">
+                                <div class="weather-info">
+                                    <div class="weather-icon">☀️</div>
+                                    <div class="weather-details">
+                                        <div class="weather-temp">22°C</div>
+                                        <div class="weather-desc">Слънчево</div>
+                                        <div class="weather-desc">София, България</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'quote':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">💭</div>
+                                <h4>Мотивация</h4>
+                            </div>
+                            <div class="block-content">
+                                <div class="quote-text">
+                                    "Успехът е сумата от малките усилия, повтаряни ден след ден."
+                                </div>
+                                <div class="quote-author">- Робърт Колиър</div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'link':
+                        content.innerHTML = `
+                            <div class="block-header">
+                                <div class="block-icon">🔗</div>
+                                <h4>Бърз линк</h4>
+                            </div>
+                            <div class="block-content">
+                                <input type="url" class="link-input" placeholder="Въведете URL..." value="https://example.com">
+                                <button class="link-btn" onclick="openCustomLink(this)">Отвори линк</button>
+                            </div>
+                        `;
+                        break;
+                }
+
+                return content;
+            }
+
+            function setupBlockFunctionality(block, type) {
+                // Add click handlers and other functionality based on block type
+                const addBlockClickHandler = (block, handler) => {
+                    block.addEventListener('click', (e) => {
+                        if (!editMode && !isResizing && !e.target.closest('.delete-btn')) {
+                            handler(e);
+                        }
+                    });
+                };
+
+                // Add delete functionality
+                const deleteBtn = block.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (editMode) {
+                        deleteBlock(block);
+                    }
+                });
+
+                // Add hover effects
+                block.addEventListener('mouseenter', () => {
+                    if (!editMode && !isResizing) {
+                        block.style.transform = 'translateY(-4px)';
+                        block.style.boxShadow = '0 20px 48px rgba(2,18,40,0.15)';
+                    }
+                });
+                
+                block.addEventListener('mouseleave', () => {
+                    if (!editMode && !isResizing) {
+                        block.style.transform = 'translateY(0)';
+                        block.style.boxShadow = '0 12px 32px rgba(2,18,40,0.08)';
+                    }
+                });
+            }
+
+            function deleteBlock(block) {
+                const blockId = block.getAttribute('data-block-id');
+                
+                // Remove from localStorage
+                const savedPositions = JSON.parse(localStorage.getItem('blockPositions') || '{}');
+                const savedDimensions = JSON.parse(localStorage.getItem('blockDimensions') || '{}');
+                delete savedPositions[blockId];
+                delete savedDimensions[blockId];
+                localStorage.setItem('blockPositions', JSON.stringify(savedPositions));
+                localStorage.setItem('blockDimensions', JSON.stringify(savedDimensions));
+
+                // Remove from DOM
+                block.remove();
+
+                // Update blocks collection
+                blocks = document.querySelectorAll('.custom-block');
+                updateContainerHeight();
+            }
+
+            // Add delete functionality to existing blocks
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (editMode) {
+                        deleteBlock(btn.closest('.custom-block'));
+                    }
+                });
+            });
+
+            // Original functionality (only when not in edit mode)
+            const calendarBlock = document.querySelector('.calendar-block');
+            const homeworkBlock = document.querySelector('.homework-block');
+            const curriculumBlock = document.querySelector('.curriculum-block');
+
+            function addBlockClickHandler(block, handler) {
+                block.addEventListener('click', (e) => {
+                    if (!editMode && !isResizing) {
+                        handler(e);
+                    }
+                });
+            }
+
+            // Calendar block click handler
+            addBlockClickHandler(calendarBlock, () => {
+                window.open('https://calendar.google.com', '_blank');
+            });
+
+            // Homework block functionality
+            const homeworkCheckboxes = document.querySelectorAll('.homework-item input[type="checkbox"]');
+            const progressElement = document.querySelector('.homework-progress span');
+            
+            function updateHomeworkProgress() {
+                const total = homeworkCheckboxes.length;
+                const completed = Array.from(homeworkCheckboxes).filter(cb => cb.checked).length;
+                progressElement.textContent = `${completed} от ${total} завършени`;
+            }
+
+            homeworkCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateHomeworkProgress);
+            });
+
+            // Homework block click handler
+            addBlockClickHandler(homeworkBlock, (e) => {
+                if (e.target.type === 'checkbox' || e.target.tagName === 'LABEL') return;
+                alert('Домашни задания - функцията ще бъде добавена скоро!');
+            });
+
+            // Curriculum block click handler
+            addBlockClickHandler(curriculumBlock, () => {
+                alert('Учебна програма - настройките ще бъдат достъпни в менюто Settings!');
+            });
+
+            // Add hover effects to custom blocks (only when not in edit mode or resizing)
+            blocks.forEach(block => {
+                block.addEventListener('mouseenter', () => {
+                    if (!editMode && !isResizing) {
+                        block.style.transform = 'translateY(-4px)';
+                        block.style.boxShadow = '0 20px 48px rgba(2,18,40,0.15)';
+                    }
+                });
+                
+                block.addEventListener('mouseleave', () => {
+                    if (!editMode && !isResizing) {
+                        block.style.transform = 'translateY(0)';
+                        block.style.boxShadow = '0 12px 32px rgba(2,18,40,0.08)';
+                    }
+                });
+            });
+        })();
     </script>
 
     <script>
@@ -251,10 +1940,10 @@
     </script>
 
     <script>
-        // single-run sheen control for icon buttons and cards
+        // single-run sheen control for icon buttons, cards, and custom blocks
         (function(){
             if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-            const targets = document.querySelectorAll('.icon-btn, .card');
+            const targets = document.querySelectorAll('.icon-btn, .card, .custom-block');
             function finishOutgoing(){
                 document.querySelectorAll('.sheen-back').forEach(el=>{
                     // force it to its end state, then remove classes shortly after
@@ -265,6 +1954,15 @@
                 });
             }
             function addOnce(el, cls){
+                // Don't add sheen if resizing, in edit mode, or actively being resized
+                if (el.classList.contains('resizing') || 
+                    el.classList.contains('dragging') ||
+                    (el.classList.contains('custom-block') && 
+                     (el.closest('.custom-blocks').classList.contains('resizing-active') ||
+                      el.classList.contains('edit-mode')))) {
+                    return;
+                }
+                
                 // finish any outgoing sheen animations first so they don't linger
                 finishOutgoing();
                 el.classList.remove('sheen-run','sheen-back');
@@ -319,5 +2017,83 @@
             });
         })();
     </script>
+
+    <script>
+        // Helper functions for specific block types
+        function addReminderItem(button) {
+            const reminderList = button.parentElement.querySelector('.reminder-list');
+            const newItem = document.createElement('div');
+            newItem.className = 'reminder-item';
+            const itemId = 'remind' + Date.now();
+            newItem.innerHTML = `
+                <input type="checkbox" id="${itemId}">
+                <input type="text" placeholder="Добави напомняне..." value="">
+            `;
+            reminderList.appendChild(newItem);
+        }
+
+        function togglePlay() {
+            const playBtn = event.target;
+            if (playBtn.textContent === '▶️') {
+                playBtn.textContent = '⏸️';
+                // Here you would add actual music playing logic
+            } else {
+                playBtn.textContent = '▶️';
+                // Here you would add actual music pausing logic
+            }
+        }
+
+        function previousTrack() {
+            // Add previous track logic
+            console.log('Previous track');
+        }
+
+        function nextTrack() {
+            // Add next track logic
+            console.log('Next track');
+        }
+
+        function openCustomLink(button) {
+            const linkInput = button.parentElement.querySelector('.link-input');
+            const url = linkInput.value;
+            if (url && url.trim() !== '') {
+                window.open(url, '_blank');
+            }
+        }
+
+        // Storage service switching
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('storage-option')) {
+                const storageOptions = e.target.parentElement;
+                const storageLink = storageOptions.parentElement.querySelector('.storage-link');
+                
+                // Remove active class from all options
+                storageOptions.querySelectorAll('.storage-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active class to clicked option
+                e.target.classList.add('active');
+                
+                // Update link
+                const service = e.target.getAttribute('data-service');
+                if (service === 'dropbox') {
+                    storageLink.href = 'https://www.dropbox.com';
+                    storageLink.textContent = 'Отвори Dropbox';
+                } else if (service === 'gdrive') {
+                    storageLink.href = 'https://drive.google.com';
+                    storageLink.textContent = 'Отвори Google Drive';
+                }
+            }
+        });
+
+        // Prevent edit mode activation when interacting with form elements
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('input, button, .storage-option, .music-btn') && 
+                e.target.closest('.custom-block')) {
+                e.stopPropagation();
+            }
+        });
+    </script>
 </body>
-</html>
+</html> 
