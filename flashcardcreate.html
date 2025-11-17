@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Skyline Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg-gradient:
+                linear-gradient(180deg, rgba(32, 102, 255, 0.72), rgba(255, 255, 255, 0.5)),
+                url('assets/bg-silk.jpg') center/cover no-repeat;
+            --glass: rgba(255,255,255,0.22);
+            --glass-strong: rgba(255,255,255,0.35);
+            --text-primary:#0b1630;
+            --text-muted:rgba(255,255,255,0.72);
+            --accent:#1d4ed8;
+            --accent-soft:#60a5fa;
+            --card-size:clamp(320px,58vw,540px);
+        }
+
+        *{box-sizing:border-box;margin:0;padding:0;}
+
+        body{
+            font-family:'Montserrat',Arial,sans-serif;
+            min-height:100vh;
+            background:var(--bg-gradient);
+            color:#f6fbff;
+            display:flex;
+            justify-content:center;
+            padding:36px clamp(20px,6vw,60px);
+        }
+
+        .frame{
+            width:min(1200px,100%);
+            display:flex;
+            flex-direction:column;
+            gap:48px;
+        }
+
+        .skyline-bar{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:24px;
+        }
+
+        .nav-btn,
+        .profile-btn{
+            width:60px;
+            height:60px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-decoration:none;
+            color:#f6fbff;
+            background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(220,230,255,0.08));
+            border:1px solid rgba(255,255,255,0.32);
+            box-shadow:0 28px 68px rgba(3,22,66,0.34);
+            backdrop-filter:blur(14px);
+            transition:transform 200ms cubic-bezier(.2,.9,.3,1), box-shadow 200ms ease;
+        }
+
+        .nav-btn:hover,
+        .profile-btn:hover{transform:translateY(-3px);box-shadow:0 36px 82px rgba(3,22,66,0.4);}
+
+        .nav-btn span{font-size:22px;font-weight:700;}
+
+        .profile-initials{
+            width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-soft));display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:0.3px;
+        }
+
+        .skyline-capsule{flex:1;display:flex;justify-content:center;position:relative;}
+
+        .skyline-pill{
+            width:min(960px,100%);
+            border-radius:999px;
+            padding:16px clamp(32px,6vw,64px);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:clamp(24px,6vw,80px);
+            font-size:clamp(15px,1.6vw,20px);
+            font-weight:700;
+            letter-spacing:0.04em;
+            background:linear-gradient(120deg, rgba(255,255,255,0.28), rgba(210,230,255,0.12));
+            border:1px solid rgba(255,255,255,0.32);
+            box-shadow:0 32px 90px rgba(3,22,66,0.42);
+            backdrop-filter:blur(18px);
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+            transition:transform 220ms ease, box-shadow 220ms ease;
+        }
+
+        .skyline-pill::before{
+            content:'';
+            position:absolute;
+            inset:0;
+            border-radius:999px;
+            background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.6), transparent 70%);
+            opacity:var(--glow,0.42);
+            transition:opacity 240ms ease;
+        }
+
+        .skyline-pill.drag-hover{transform:translateY(-2px);box-shadow:0 40px 110px rgba(3,22,66,0.48);}
+
+        .skyline-pill > span{position:relative;z-index:1;display:flex;align-items:center;gap:10px;}
+
+        .skyline-count{
+            min-width:30px;
+            height:26px;
+            border-radius:999px;
+            background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+            letter-spacing:0.4px;
+            box-shadow:0 20px 40px rgba(29,78,216,0.35);
+            transform:scale(0);
+            transition:transform 220ms ease;
+        }
+
+        .skyline-pill.has-items .skyline-count{transform:scale(1);}
+
+        .skyline-panel{
+            position:absolute;
+            top:calc(100% + 14px);
+            left:50%;
+            transform:translate(-50%, -14px);
+            width:min(960px,92vw);
+            border-radius:28px;
+            background:linear-gradient(180deg, rgba(255,255,255,0.34), rgba(225,235,255,0.16));
+            border:1px solid rgba(255,255,255,0.38);
+            box-shadow:0 48px 120px rgba(3,22,66,0.46);
+            backdrop-filter:blur(22px);
+            max-height:0;
+            opacity:0;
+            overflow:hidden;
+            transition:max-height 360ms cubic-bezier(.28,.9,.32,1), opacity 260ms ease, transform 320ms cubic-bezier(.28,.9,.32,1);
+            pointer-events:none;
+            padding:0 32px;
+            display:flex;
+            flex-direction:column;
+        }
+
+        .skyline-panel.open{
+            max-height:420px;
+            opacity:1;
+            transform:translate(-50%,0);
+            pointer-events:auto;
+            padding:28px 32px 32px;
+        }
+
+        .clipboard-empty{margin:0 0 16px;text-align:center;font-size:14px;color:rgba(12,30,58,0.7);}
+        .clipboard-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+        .clipboard-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;background:rgba(255,255,255,0.24);border:1px solid rgba(255,255,255,0.32);box-shadow:0 26px 60px rgba(8,24,60,0.3);cursor:grab;transition:transform 200ms ease, box-shadow 200ms ease;}
+        .clipboard-item:hover{transform:translateY(-3px);box-shadow:0 32px 74px rgba(8,24,60,0.36);}        
+        .clipboard-preview{flex:0 0 56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.32);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;}
+        .clipboard-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+        .clipboard-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;color:#0b1630;}
+        .clipboard-title{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .clipboard-snippet{font-size:12px;line-height:1.35;color:rgba(12,30,58,0.68);display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+        .clipboard-meta{font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:rgba(12,30,58,0.52);}
+
+        main{display:flex;flex-direction:column;align-items:center;gap:40px;}
+
+        .card-stage{display:flex;flex-direction:column;align-items:center;gap:24px;}
+
+        .flashcard-frame{width:var(--card-size);height:calc(var(--card-size) * 0.62);perspective:1400px;position:relative;}
+        .flashcard-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 460ms cubic-bezier(.22,.9,.32,1);}
+        .flashcard-inner.flipped{transform:rotateY(180deg);}
+
+        .flashcard-face{
+            position:absolute;
+            inset:0;
+            border-radius:28px;
+            padding:32px clamp(26px,4vw,40px);
+            background:linear-gradient(160deg, rgba(255,255,255,0.82), rgba(215,230,255,0.48));
+            border:1px solid rgba(255,255,255,0.68);
+            box-shadow:0 38px 94px rgba(3,22,66,0.38);
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            color:var(--text-primary);
+            backface-visibility:hidden;
+        }
+
+        .flashcard-face.back{transform:rotateY(180deg);}
+
+        .editable{
+            flex:1;
+            width:100%;
+            font-size:clamp(20px,2.6vw,28px);
+            line-height:1.45;
+            outline:none;
+            border:none;
+            background:transparent;
+            color:inherit;
+            white-space:pre-wrap;
+            overflow:auto;
+        }
+
+        .editable:empty:before{content:attr(data-placeholder);color:rgba(12,30,58,0.35);}
+
+        .card-toolbar{display:flex;gap:14px;justify-content:center;}
+        .card-toolbar button{border:none;border-radius:14px;padding:12px 24px;font-size:13px;font-weight:600;cursor:pointer;transition:transform 180ms ease, box-shadow 180ms ease;}
+        .card-toolbar button.primary{background:linear-gradient(135deg,var(--accent),var(--accent-soft));color:#fff;box-shadow:0 22px 48px rgba(29,78,216,0.32);}
+        .card-toolbar button.secondary{background:rgba(255,255,255,0.8);color:var(--text-primary);box-shadow:0 18px 42px rgba(3,22,66,0.22);}
+        .card-toolbar button:hover{transform:translateY(-2px);}
+
+        .card-status{min-height:18px;font-size:12px;color:var(--text-muted);text-align:center;}
+
+        .summary-section{width:min(100%,960px);background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.32);border-radius:28px;padding:28px clamp(22px,4vw,44px);backdrop-filter:blur(20px);box-shadow:0 44px 108px rgba(3,22,66,0.4);}
+        .summary-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;}
+        .summary-header h2{margin:0;font-size:20px;color:#f6fbff;letter-spacing:0.02em;}
+        .summary-header span{font-size:13px;color:rgba(255,255,255,0.72);}
+
+        .summary-list{list-style:none;margin:0;padding:0;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+        .summary-item{border-radius:22px;padding:20px;background:rgba(255,255,255,0.26);border:1px solid rgba(255,255,255,0.36);box-shadow:0 28px 64px rgba(3,22,66,0.34);display:flex;flex-direction:column;gap:12px;color:#0b1630;transition:transform 200ms ease, box-shadow 200ms ease;}
+        .summary-item:hover{transform:translateY(-3px);box-shadow:0 36px 82px rgba(3,22,66,0.38);}
+        .summary-front{font-weight:600;font-size:14px;line-height:1.35;}
+        .summary-back{font-size:13px;color:rgba(12,30,58,0.72);line-height:1.45;}
+        .summary-meta{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:rgba(12,30,58,0.6);text-transform:uppercase;letter-spacing:0.4px;}
+        .summary-actions{display:flex;gap:8px;}
+        .summary-actions button{flex:1;border:none;border-radius:12px;padding:8px 10px;font-size:11px;font-weight:600;background:rgba(255,255,255,0.75);color:#0b1630;cursor:pointer;transition:transform 160ms ease, background 160ms ease;}
+        .summary-actions button:hover{transform:translateY(-1px);background:#fff;}
+        .summary-actions button.delete{color:#a02424;background:rgba(255,255,255,0.65);}        
+
+        @media (max-width:720px){
+            .skyline-bar{flex-direction:column;gap:18px;}
+            .skyline-pill{padding:14px 24px;}
+            .flashcard-frame{width:100%;}
+            .card-toolbar{flex-direction:column;}
+        }
+    </style>
+</head>
+<body>
+    <div class="frame">
+        <div class="skyline-bar" id="skylineBar">
+            <a href="homepage.html" class="nav-btn" title="Назад" aria-label="Назад">
+                <span>←</span>
+            </a>
+            <div class="skyline-capsule">
+                <div class="skyline-pill" id="skylineCapsule" role="button" tabindex="0" aria-expanded="false" aria-controls="skylinePanel">
+                    <span><strong id="navDate">—</strong></span>
+                    <span><strong id="navTime">—</strong></span>
+                    <span class="skyline-count" id="skylineCount" aria-hidden="true">0</span>
+                </div>
+                <div class="skyline-panel" id="skylinePanel" aria-hidden="true">
+                    <p class="clipboard-empty" id="clipboardEmpty">Плъзни файлове върху лентата, за да ги задържиш за по-късно.</p>
+                    <ul class="clipboard-list" id="clipboardList"></ul>
+                </div>
+            </div>
+            <div class="profile-btn" title="Профил"><div class="profile-initials">BC</div></div>
+        </div>
+
+        <main>
+            <section class="card-stage" aria-live="polite">
+                <div class="flashcard-frame" id="cardFrame">
+                    <div class="flashcard-inner" id="flashcard">
+                        <article class="flashcard-face front" aria-label="Предна страна">
+                            <div class="editable" id="frontEditable" contenteditable="true" data-placeholder="Напиши въпроса тук…" spellcheck="false"></div>
+                        </article>
+                        <article class="flashcard-face back" aria-label="Задна страна">
+                            <div class="editable" id="backEditable" contenteditable="true" data-placeholder="Добави отговора тук…" spellcheck="false"></div>
+                        </article>
+                    </div>
+                </div>
+                <div class="card-toolbar">
+                    <button type="button" class="primary" id="saveCard">Запази</button>
+                    <button type="button" class="secondary" id="newCard">Нова карта</button>
+                    <button type="button" class="secondary" id="flipCard">Завърти</button>
+                </div>
+                <p class="card-status" id="cardStatus">Двукратно щракване обръща картата.</p>
+            </section>
+
+            <section class="summary-section" aria-live="polite">
+                <div class="summary-header">
+                    <h2>Колекция</h2>
+                    <span id="summaryMeta">0 карти</span>
+                </div>
+                <ul class="summary-list" id="summaryList"></ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function(){
+            const LS_CARDS = 'flashcardStudio_cards_v2';
+            const LS_DRAFT = 'flashcardStudio_draft_v3';
+
+            const navDate = document.getElementById('navDate');
+            const navTime = document.getElementById('navTime');
+            const skylineCapsule = document.getElementById('skylineCapsule');
+            const skylinePanel = document.getElementById('skylinePanel');
+            const skylineCount = document.getElementById('skylineCount');
+            const clipboardList = document.getElementById('clipboardList');
+            const clipboardEmpty = document.getElementById('clipboardEmpty');
+
+            const flashcard = document.getElementById('flashcard');
+            const frontEditable = document.getElementById('frontEditable');
+            const backEditable = document.getElementById('backEditable');
+            const saveButton = document.getElementById('saveCard');
+            const newButton = document.getElementById('newCard');
+            const flipButton = document.getElementById('flipCard');
+            const cardStatus = document.getElementById('cardStatus');
+            const summaryList = document.getElementById('summaryList');
+            const summaryMeta = document.getElementById('summaryMeta');
+
+            let cards = [];
+            let clipboardItems = [];
+            let clipboardOpen = false;
+            let editingId = null;
+            let statusTimer = null;
+
+            function updateClock(){
+                const now = new Date();
+                navDate.textContent = now.toLocaleDateString('bg-BG',{ day:'2-digit', month:'2-digit', year:'numeric' });
+                navTime.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+            }
+            updateClock();
+            setInterval(updateClock, 60000);
+
+            function showStatus(message){
+                if(statusTimer){ clearTimeout(statusTimer); }
+                cardStatus.textContent = message;
+                statusTimer = setTimeout(() => {
+                    cardStatus.textContent = 'Двукратно щракване обръща картата.';
+                }, 3200);
+            }
+
+            function persistCards(){
+                localStorage.setItem(LS_CARDS, JSON.stringify(cards));
+            }
+
+            function persistDraft(){
+                const draft = {
+                    front: frontEditable.innerHTML.trim(),
+                    back: backEditable.innerHTML.trim(),
+                    editingId
+                };
+                localStorage.setItem(LS_DRAFT, JSON.stringify(draft));
+            }
+
+            function resetCard(){
+                editingId = null;
+                flashcard.classList.remove('flipped');
+                frontEditable.innerHTML = '';
+                backEditable.innerHTML = '';
+                persistDraft();
+                showStatus('Започна нова карта.');
+            }
+
+            function loadState(){
+                try{
+                    const stored = JSON.parse(localStorage.getItem(LS_CARDS) || '[]');
+                    cards = Array.isArray(stored) ? stored : [];
+                }catch(err){ cards = []; }
+
+                try{
+                    const draft = JSON.parse(localStorage.getItem(LS_DRAFT) || 'null');
+                    if(draft){
+                        editingId = draft.editingId || null;
+                        frontEditable.innerHTML = draft.front || '';
+                        backEditable.innerHTML = draft.back || '';
+                    }
+                }catch(err){/* ignore */}
+
+                renderSummary();
+            }
+
+            function snippet(html, limit = 110){
+                const text = (html || '').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+                if(text.length <= limit) return text;
+                return `${text.slice(0, limit)}…`;
+            }
+
+            function renderSummary(){
+                summaryList.innerHTML = '';
+                if(!cards.length){
+                    const empty = document.createElement('li');
+                    empty.className = 'summary-item';
+                    empty.innerHTML = '<div class="summary-front">Все още няма запазени карти.</div><div class="summary-back">Попълни картата и натисни „Запази“, за да я добавиш.</div>';
+                    summaryList.appendChild(empty);
+                    summaryMeta.textContent = '0 карти';
+                    return;
+                }
+
+                cards.forEach(card => {
+                    const item = document.createElement('li');
+                    item.className = 'summary-item';
+                    item.dataset.id = card.id;
+                    item.innerHTML = `
+                        <div class="summary-front">${snippet(card.front)}</div>
+                        <div class="summary-back">${snippet(card.back)}</div>
+                        <div class="summary-meta"><span>${new Date(card.updatedAt).toLocaleString('bg-BG',{ hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short' })}</span><span>${card.tags ? card.tags : 'Без маркер'}</span></div>
+                        <div class="summary-actions">
+                            <button type="button" data-action="edit">Редакция</button>
+                            <button type="button" data-action="duplicate">Дублирай</button>
+                            <button type="button" data-action="delete" class="delete">Изтрий</button>
+                        </div>`;
+                    summaryList.appendChild(item);
+                });
+                summaryMeta.textContent = `${cards.length} ${cards.length === 1 ? 'карта' : 'карти'}`;
+            }
+
+            function buildCardObject(){
+                const front = frontEditable.innerHTML.trim();
+                const back = backEditable.innerHTML.trim();
+                if(!front || !back){
+                    showStatus('Нужни са текст и на двете страни.');
+                    return null;
+                }
+                const base = editingId ? cards.find(c => c.id === editingId) : null;
+                const now = Date.now();
+                return {
+                    id: editingId || (crypto.randomUUID ? crypto.randomUUID() : `card-${now}-${Math.random().toString(16).slice(2)}`),
+                    front,
+                    back,
+                    tags: base ? base.tags : '',
+                    createdAt: base ? base.createdAt : now,
+                    updatedAt: now
+                };
+            }
+
+            function saveCard(){
+                const card = buildCardObject();
+                if(!card) return;
+                if(editingId){
+                    const idx = cards.findIndex(c => c.id === editingId);
+                    if(idx !== -1){
+                        cards[idx] = card;
+                        persistCards();
+                        renderSummary();
+                        showStatus('Картата е обновена.');
+                    }
+                } else {
+                    cards.unshift(card);
+                    persistCards();
+                    renderSummary();
+                    showStatus('Картата е записана.');
+                }
+                editingId = card.id;
+                persistDraft();
+            }
+
+            function startEdit(id){
+                const card = cards.find(c => c.id === id);
+                if(!card) return;
+                editingId = id;
+                flashcard.classList.remove('flipped');
+                frontEditable.innerHTML = card.front;
+                backEditable.innerHTML = card.back;
+                persistDraft();
+                showStatus('Редакция на избраната карта.');
+                frontEditable.focus({ preventScroll:true });
+            }
+
+            function deleteCard(id){
+                const idx = cards.findIndex(c => c.id === id);
+                if(idx === -1) return;
+                cards.splice(idx, 1);
+                persistCards();
+                renderSummary();
+                if(editingId === id){
+                    resetCard();
+                } else {
+                    showStatus('Картата е изтрита.');
+                }
+            }
+
+            function duplicateCard(id){
+                const card = cards.find(c => c.id === id);
+                if(!card) return;
+                const now = Date.now();
+                const duplicate = {
+                    ...card,
+                    id: crypto.randomUUID ? crypto.randomUUID() : `card-${now}-${Math.random().toString(16).slice(2)}`,
+                    createdAt: now,
+                    updatedAt: now
+                };
+                cards.unshift(duplicate);
+                persistCards();
+                renderSummary();
+                showStatus('Създадена е дубликат карта.');
+            }
+
+            summaryList.addEventListener('click', (event) => {
+                const actionBtn = event.target.closest('button');
+                const item = event.target.closest('.summary-item');
+                if(!item) return;
+                const id = item.dataset.id;
+                if(!id) return;
+                if(!actionBtn) return;
+                const action = actionBtn.dataset.action;
+                if(action === 'edit') startEdit(id);
+                if(action === 'delete') deleteCard(id);
+                if(action === 'duplicate') duplicateCard(id);
+            });
+
+            function handleEditableInput(){
+                persistDraft();
+            }
+
+            frontEditable.addEventListener('input', handleEditableInput);
+            backEditable.addEventListener('input', handleEditableInput);
+
+            flashcard.addEventListener('dblclick', (event) => {
+                if(event.target.closest('button')) return;
+                flashcard.classList.toggle('flipped');
+            });
+
+            saveButton.addEventListener('click', saveCard);
+            newButton.addEventListener('click', resetCard);
+            flipButton.addEventListener('click', () => flashcard.classList.toggle('flipped'));
+
+            document.addEventListener('keydown', (event) => {
+                if((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's'){
+                    event.preventDefault();
+                    saveCard();
+                }
+                if(event.key === 'Escape' && clipboardOpen){
+                    setClipboardOpen(false);
+                }
+            });
+
+            function setClipboardOpen(state){
+                if(state === clipboardOpen) return;
+                clipboardOpen = state;
+                skylinePanel.classList.toggle('open', state);
+                skylinePanel.setAttribute('aria-hidden', state ? 'false' : 'true');
+                skylineCapsule.setAttribute('aria-expanded', state ? 'true' : 'false');
+                if(!state){
+                    skylinePanel.scrollTop = 0;
+                }
+            }
+
+            skylineCapsule.addEventListener('click', () => setClipboardOpen(!clipboardOpen));
+            skylineCapsule.addEventListener('keydown', (event) => {
+                if(event.key === 'Enter' || event.key === ' '){
+                    event.preventDefault();
+                    setClipboardOpen(!clipboardOpen);
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if(!clipboardOpen) return;
+                if(event.target === skylineCapsule || skylineCapsule.contains(event.target)) return;
+                if(skylinePanel.contains(event.target)) return;
+                setClipboardOpen(false);
+            });
+
+            function updateClipboardUI(){
+                clipboardList.innerHTML = '';
+                skylineCapsule.classList.toggle('has-items', clipboardItems.length > 0);
+                skylineCount.textContent = String(clipboardItems.length);
+                skylineCount.setAttribute('aria-hidden', clipboardItems.length ? 'false' : 'true');
+                clipboardEmpty.setAttribute('aria-hidden', clipboardItems.length ? 'true' : 'false');
+
+                clipboardItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'clipboard-item';
+                    li.dataset.itemId = item.id;
+                    li.setAttribute('draggable','true');
+
+                    const preview = document.createElement('div');
+                    preview.className = 'clipboard-preview';
+                    if(item.previewKind === 'image' && item.previewUrl){
+                        const img = document.createElement('img');
+                        img.src = item.previewUrl;
+                        img.alt = item.name;
+                        preview.appendChild(img);
+                    } else {
+                        preview.textContent = item.previewIcon || '📄';
+                    }
+
+                    const info = document.createElement('div');
+                    info.className = 'clipboard-info';
+                    info.innerHTML = `
+                        <div class="clipboard-title">${item.name}</div>
+                        ${item.snippet ? `<div class="clipboard-snippet">${item.snippet}</div>` : ''}
+                        <div class="clipboard-meta">${item.type || 'Файл'} · ${formatBytes(item.size)}</div>`;
+
+                    li.append(preview, info);
+                    li.addEventListener('dragstart', (event) => {
+                        event.dataTransfer.effectAllowed = 'copy';
+                        event.dataTransfer.setData('text/plain', item.name);
+                        if(event.dataTransfer.items && item.file){
+                            try{ event.dataTransfer.items.add(item.file); }catch(err){}
+                        }
+                    });
+                    clipboardList.appendChild(li);
+                });
+            }
+
+            function formatBytes(bytes){
+                if(typeof bytes !== 'number' || Number.isNaN(bytes)) return '0 B';
+                const units = ['B','KB','MB','GB'];
+                let value = bytes;
+                let index = 0;
+                while(value >= 1024 && index < units.length - 1){
+                    value /= 1024;
+                    index += 1;
+                }
+                const formatted = value % 1 === 0 ? value : value.toFixed(1);
+                return `${formatted} ${units[index]}`;
+            }
+
+            function pickIcon(type){
+                if(!type) return '📄';
+                if(type.includes('image')) return '🖼️';
+                if(type.includes('video')) return '🎬';
+                if(type.includes('audio')) return '🎵';
+                if(type.includes('pdf')) return '📕';
+                if(type.includes('sheet')) return '📊';
+                if(type.includes('zip')) return '🗜️';
+                if(type.includes('text')) return '📝';
+                return '📄';
+            }
+
+            function prepareClipboardItem(file){
+                const item = {
+                    id: `${file.name}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    file,
+                    snippet: '',
+                    previewUrl: null,
+                    previewIcon: pickIcon(file.type || '')
+                };
+
+                if((file.type || '').startsWith('image/')){
+                    item.previewUrl = URL.createObjectURL(file);
+                    item.previewKind = 'image';
+                } else if((file.type || '').startsWith('text/')){
+                    file.slice(0,4096).text().then(text => {
+                        const cleaned = (text || '').replace(/\s+/g,' ').trim();
+                        if(cleaned){
+                            item.snippet = cleaned.slice(0, 140) + (cleaned.length > 140 ? '…' : '');
+                            updateClipboardUI();
+                        }
+                    }).catch(()=>{});
+                }
+
+                return item;
+            }
+
+            function captureFiles(list){
+                const files = Array.from(list || []);
+                if(!files.length) return;
+                files.forEach(file => clipboardItems.unshift(prepareClipboardItem(file)));
+                updateClipboardUI();
+                setClipboardOpen(true);
+            }
+
+            function isFileDrag(event){
+                const dt = event.dataTransfer;
+                if(!dt) return false;
+                const types = dt.types ? Array.from(dt.types) : [];
+                if(types.includes('Files')) return true;
+                if(types.length === 0) return true;
+                return dt.files && dt.files.length > 0;
+            }
+
+            ['dragenter','dragover'].forEach(type => {
+                skylineCapsule.addEventListener(type, (event) => {
+                    if(!isFileDrag(event)) return;
+                    event.preventDefault();
+                    skylineCapsule.style.setProperty('--glow','0.82');
+                    skylineCapsule.classList.add('drag-hover');
+                    event.dataTransfer.dropEffect = 'copy';
+                });
+            });
+
+            skylineCapsule.addEventListener('dragleave', () => {
+                skylineCapsule.style.setProperty('--glow','0.42');
+                skylineCapsule.classList.remove('drag-hover');
+            });
+
+            skylineCapsule.addEventListener('drop', (event) => {
+                if(!isFileDrag(event)) return;
+                event.preventDefault();
+                skylineCapsule.style.setProperty('--glow','0.42');
+                skylineCapsule.classList.remove('drag-hover');
+                captureFiles(event.dataTransfer.files);
+            });
+
+            skylineCapsule.addEventListener('mousemove', (event) => {
+                const rect = skylineCapsule.getBoundingClientRect();
+                const mx = ((event.clientX - rect.left) / rect.width) * 100;
+                const my = ((event.clientY - rect.top) / rect.height) * 100;
+                skylineCapsule.style.setProperty('--mx', `${mx}%`);
+                skylineCapsule.style.setProperty('--my', `${my}%`);
+            });
+
+            skylineCapsule.addEventListener('mouseleave', () => {
+                skylineCapsule.style.removeProperty('--mx');
+                skylineCapsule.style.removeProperty('--my');
+            });
+
+            loadState();
+            updateClipboardUI();
+        })();
+    </script>
+</body>
+</html>
