@@ -1,0 +1,144 @@
+:root{
+  --bg-1: #e9f6ff;
+  --bg-2: #f4fbff;
+  --card: #ffffff;
+  --accent: #2f7cd4;
+  --muted: #4d6f8f;
+  --preview-size: 420px; /* slightly reduced preview for two-column */
+  --content-max: 1100px;   /* center content width */
+}
+
+/* reset */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg-1),var(--bg-2));}
+.container{max-width:1100px;margin:28px auto;padding:18px}
+
+/* header */
+header{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:14px}
+header h1{margin:0;color:var(--accent)}
+header .desc{margin:0;color:var(--muted);font-size:14px}
+
+/* top menu */
+.top-menu{max-width:var(--content-max);margin:0 auto 12px;padding:0 14px;display:flex;justify-content:space-between;align-items:center}
+.top-menu .home-link{color:var(--accent);font-weight:700;text-decoration:none}
+.menu-wrap{position:relative}
+.menu-btn{background:linear-gradient(180deg,var(--accent),#256fb3);color:#fff;border:none;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+.menu-dropdown{position:absolute;right:0;top:42px;background:#fff;border-radius:10px;box-shadow:0 12px 40px rgba(10,30,60,0.08);list-style:none;padding:6px 8px;display:none;min-width:180px;border:1px solid rgba(20,40,80,0.04)}
+.menu-dropdown.show{display:block}
+.menu-dropdown li{padding:6px 8px}
+.menu-dropdown a{color:var(--muted);text-decoration:none;display:block}
+.menu-dropdown a:hover{color:var(--accent)}
+
+/* avatar-menu placed under preview */
+.avatar-menu{margin-top:14px;display:flex;align-items:center;gap:12px;justify-content:center}
+.home-btn{padding:8px 12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,250,255,0.95));border:1px solid rgba(0,0,0,0.04);color:var(--accent);font-weight:700;text-decoration:none;transition:transform 220ms ease, box-shadow 220ms ease}
+.home-btn:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(47,124,212,0.10)}
+
+/* hamburger button: three lines morph to X */
+.hamburger{width:44px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer;padding:6px;transition:background 200ms ease}
+.hamburger .bar{display:block;width:20px;height:2px;background:var(--accent);margin:3px 0;transition:transform 260ms cubic-bezier(.2,.9,.3,1), opacity 160ms, background 160ms}
+.hamburger.open{background:linear-gradient(180deg,var(--accent),#256fb3)}
+.hamburger.open .bar{background:#fff}
+.hamburger.open .bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open .bar:nth-child(2){opacity:0}
+.hamburger.open .bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.menu-dropdown{position:absolute;top:48px;left:50%;transform:translateX(-50%);min-width:220px}
+
+/* layout */
+.builder{display:grid;grid-template-columns:320px 1fr 320px;gap:28px;max-width:var(--content-max);margin:0 auto;align-items:start;padding:18px}
+.left, .col{display:flex;flex-direction:column;gap:14px}
+.left-col{align-items:flex-start}
+.center-col{align-items:center}
+.right-col{align-items:flex-start}
+
+/* preview area: stacked layers */
+.preview-wrap{
+  width:var(--preview-size);
+  height:var(--preview-size);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,250,255,0.9));
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 14px 40px rgba(10,30,80,0.06);
+  position:relative;overflow:hidden;display:block;
+}
+
+/* export button overlay (small rounded) */
+.export-btn{
+  position:absolute;right:12px;top:12px;z-index:30;width:40px;height:40px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#256fb3);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(47,124,212,0.18)
+}
+.export-btn svg{display:block}
+
+/* save button for profile page */
+.profile-actions{max-width:var(--content-max);margin:18px auto;padding:0 14px;display:flex;justify-content:flex-end}
+.save-btn{padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--accent),#256fb3);color:#fff;cursor:pointer;box-shadow:0 12px 34px rgba(47,124,212,0.12);font-weight:700}
+.save-btn:active{transform:translateY(1px)}
+.save-btn.saving{opacity:0.8;transform:scale(0.98)}
+.save-btn.saved{background:linear-gradient(180deg,#2ecc71,#28b463)}
+
+.center-meta{width:var(--preview-size);max-width:96%;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.center-meta .question-card{width:100%}
+.center-meta input[type="text"], .center-meta textarea, .center-meta input[type="color"]{width:100%}
+
+/* full-width profile fields placed under customization */
+.profile-fields{max-width:var(--content-max);margin:18px auto 40px;padding:0 14px}
+.profile-fields .center-meta.full-width{display:flex;flex-direction:column;gap:12px;width:100%}
+.profile-fields .question-card.wide{width:100%;padding:16px}
+.profile-fields .question-card.wide textarea{min-height:120px}
+.profile-fields .question-card.wide input{height:44px}
+
+/* each layer is a div with same background-image = sprite sheet; we compute background-position in JS */
+.layer{
+  position:absolute;left:0;top:0;right:0;bottom:0;background-repeat:no-repeat;background-size:cover;pointer-events:none;
+}
+
+/* fade-in transition for layers */
+.layer-fade{opacity:0;transform:translateY(10px) scale(0.995);transition:opacity 360ms cubic-bezier(.2,.9,.3,1), transform 360ms cubic-bezier(.2,.9,.3,1)}
+.layer-fade.show{opacity:1;transform:none}
+
+/* slight back shade to add depth */
+.layer-back{filter:brightness(0.98) saturate(0.96);opacity:0.98;}
+
+/* controls under preview */
+.preview-controls{display:none}
+.btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:var(--card);cursor:pointer}
+.primary{background:linear-gradient(180deg,var(--accent),#256fb3);color:#fff;border:none}
+
+.note{font-size:13px;color:var(--muted)}
+
+/* options area */
+.control-group{background:transparent;padding:8px;border-radius:10px;margin-bottom:10px}
+.control-group h3{margin:6px 0;color:var(--accent);font-size:15px}
+.option-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* option thumbnail (represents a single frame from the sheet) */
+.option{
+  width:64px;height:64px;border-radius:10px;overflow:hidden;background-repeat:no-repeat;background-size:cover;background-position:0 0;border:2px solid transparent;cursor:pointer;
+  transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.option:hover{transform:translateY(-6px);box-shadow:0 10px 24px rgba(47,124,212,0.08)}
+.option.selected{outline:3px solid rgba(47,124,212,0.18);transform:translateY(-8px);box-shadow:0 18px 36px rgba(47,124,212,0.12)}
+
+/* question card style */
+.question-list{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:0;align-items:stretch}
+.question-card{width:100%;background:linear-gradient(180deg, #ffffff, #fbfdff);border-radius:12px;padding:14px;border:1px solid rgba(20,40,80,0.04);box-shadow:0 8px 20px rgba(10,30,60,0.04);transition:transform 260ms cubic-bezier(.2,.9,.3,1),box-shadow 260ms,opacity 420ms ease, transform 420ms ease}
+.question-card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(10,30,60,0.08)}
+.question-card h3{margin:0 0 8px 0;font-size:15px;color:var(--accent)}
+.question-card textarea{width:100%;min-height:96px;padding:12px;border-radius:10px;border:1px solid rgba(20,40,80,0.06);resize:none}
+.question-card input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(20,40,80,0.06)}
+
+/* initial hidden state for entrance animation */
+.question-card{opacity:0;transform:translateY(12px)}
+.question-card.show{opacity:1;transform:none}
+
+/* subtle entrance animation for preview */
+.preview-wrap{transition:box-shadow 260ms ease, transform 260ms ease}
+.preview-wrap:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(10,30,60,0.08)}
+
+/* small responsive changes */
+@media(max-width:920px){
+  .builder{display:flex;flex-direction:column;align-items:center}
+  .left{width:100%}
+  .preview-wrap{width:320px;height:320px}
+  .builder{padding:10px}
+}

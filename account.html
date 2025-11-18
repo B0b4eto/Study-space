@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Account — Study Space</title>
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+  <main class="wrap">
+    <nav class="top-menu">
+      <a class="home-link" href="homepage.html">← Home</a>
+      <div class="menu-wrap">
+        <button id="acctMenuBtn" class="menu-btn" aria-haspopup="true" aria-expanded="false">☰</button>
+        <ul id="acctMenuDropdown" class="menu-dropdown" role="menu" aria-hidden="true">
+          <li role="none"><a role="menuitem" href="homepage.html">Home</a></li>
+          <li role="none"><a role="menuitem" href="edit-profile.html">Edit profile</a></li>
+          <li role="none"><a role="menuitem" href="connect-apps.html">Connect apps</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <header class="acct-header">
+      <h1>Your Account</h1>
+      <p class="sub">Manage your profile details — secure, private, and synced to your theme.</p>
+    </header>
+
+    <div class="account-grid">
+      <aside class="left-panel">
+          <div class="avatar-card">
+            <img id="acctAvatar" src="images/user.png" alt="avatar" class="acct-avatar">
+            <div id="acctNickDisplay" class="acct-nick">Nickname</div>
+            <div class="avatar-menu">
+              <button id="acctMenuBtn" class="hamburger" aria-haspopup="true" aria-expanded="false" aria-controls="acctMenuDropdown">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+              </button>
+              <a href="homepage.html" class="home-btn">Home</a>
+              <ul id="acctMenuDropdown" class="menu-dropdown" role="menu" aria-hidden="true">
+                <li role="none"><a role="menuitem" href="homepage.html">Home</a></li>
+                <li role="none"><a role="menuitem" href="edit-profile.html">Edit profile</a></li>
+                <li role="none"><a role="menuitem" href="connect-apps.html">Connect apps</a></li>
+              </ul>
+            </div>
+          </div>
+      </aside>
+
+      <section class="right-panel">
+        <section class="account-card">
+          <form id="accountForm" autocomplete="off">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" readonly />
+        </div>
+
+        <div class="field password-field">
+          <label for="password">Password</label>
+          <div class="pw-row">
+            <input id="password" type="password" />
+            <button type="button" id="togglePassword" class="tiny-btn" aria-label="Show password">Show</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="birthday">Birthday</label>
+          <input id="birthday" type="date" />
+        </div>
+
+        <div class="field location-field">
+          <label for="location">Location</label>
+          <div class="loc-row">
+            <input id="location" type="text" placeholder="City, Country" autocomplete="off" />
+            <button type="button" id="detectLoc" class="tiny-btn">Detect</button>
+          </div>
+          <ul id="locSuggestions" class="suggestions" aria-hidden="true"></ul>
+        </div>
+
+        <div class="field">
+          <label for="language">Language preference</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="bg">Bulgarian</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+          </select>
+        </div>
+
+            <div class="actions">
+              <button id="saveAccount" type="button" class="save-btn">Save changes</button>
+            </div>
+          </form>
+        </section>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+  </main>
+
+  <script src="account.js"></script>
+</body>
+</html>
