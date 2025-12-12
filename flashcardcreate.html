@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/skyline.css">
     <style>
         :root{
             --bg-gradient:
@@ -47,6 +48,12 @@
             gap:24px;
         }
 
+        .skyline-center{
+            flex:1;
+            display:flex;
+            justify-content:center;
+        }
+
         .nav-btn,
         .profile-btn{
             width:60px;
@@ -73,99 +80,7 @@
             width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-soft));display:flex;align-items:center;justify-content:center;font-weight:700;letter-spacing:0.3px;
         }
 
-        .skyline-capsule{flex:1;display:flex;justify-content:center;position:relative;}
-
-        .skyline-pill{
-            width:min(960px,100%);
-            border-radius:999px;
-            padding:16px clamp(32px,6vw,64px);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:clamp(24px,6vw,80px);
-            font-size:clamp(15px,1.6vw,20px);
-            font-weight:700;
-            letter-spacing:0.04em;
-            background:linear-gradient(120deg, rgba(255,255,255,0.28), rgba(210,230,255,0.12));
-            border:1px solid rgba(255,255,255,0.32);
-            box-shadow:0 32px 90px rgba(3,22,66,0.42);
-            backdrop-filter:blur(18px);
-            cursor:pointer;
-            position:relative;
-            overflow:hidden;
-            transition:transform 220ms ease, box-shadow 220ms ease;
-        }
-
-        .skyline-pill::before{
-            content:'';
-            position:absolute;
-            inset:0;
-            border-radius:999px;
-            background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.6), transparent 70%);
-            opacity:var(--glow,0.42);
-            transition:opacity 240ms ease;
-        }
-
-        .skyline-pill.drag-hover{transform:translateY(-2px);box-shadow:0 40px 110px rgba(3,22,66,0.48);}
-
-        .skyline-pill > span{position:relative;z-index:1;display:flex;align-items:center;gap:10px;}
-
-        .skyline-count{
-            min-width:30px;
-            height:26px;
-            border-radius:999px;
-            background:linear-gradient(135deg,var(--accent),var(--accent-soft));
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:11px;
-            letter-spacing:0.4px;
-            box-shadow:0 20px 40px rgba(29,78,216,0.35);
-            transform:scale(0);
-            transition:transform 220ms ease;
-        }
-
-        .skyline-pill.has-items .skyline-count{transform:scale(1);}
-
-        .skyline-panel{
-            position:absolute;
-            top:calc(100% + 14px);
-            left:50%;
-            transform:translate(-50%, -14px);
-            width:min(960px,92vw);
-            border-radius:28px;
-            background:linear-gradient(180deg, rgba(255,255,255,0.34), rgba(225,235,255,0.16));
-            border:1px solid rgba(255,255,255,0.38);
-            box-shadow:0 48px 120px rgba(3,22,66,0.46);
-            backdrop-filter:blur(22px);
-            max-height:0;
-            opacity:0;
-            overflow:hidden;
-            transition:max-height 360ms cubic-bezier(.28,.9,.32,1), opacity 260ms ease, transform 320ms cubic-bezier(.28,.9,.32,1);
-            pointer-events:none;
-            padding:0 32px;
-            display:flex;
-            flex-direction:column;
-        }
-
-        .skyline-panel.open{
-            max-height:420px;
-            opacity:1;
-            transform:translate(-50%,0);
-            pointer-events:auto;
-            padding:28px 32px 32px;
-        }
-
-        .clipboard-empty{margin:0 0 16px;text-align:center;font-size:14px;color:rgba(12,30,58,0.7);}
-        .clipboard-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
-        .clipboard-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:18px;background:rgba(255,255,255,0.24);border:1px solid rgba(255,255,255,0.32);box-shadow:0 26px 60px rgba(8,24,60,0.3);cursor:grab;transition:transform 200ms ease, box-shadow 200ms ease;}
-        .clipboard-item:hover{transform:translateY(-3px);box-shadow:0 32px 74px rgba(8,24,60,0.36);}        
-        .clipboard-preview{flex:0 0 56px;height:56px;border-radius:16px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.32);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;}
-        .clipboard-preview img{width:100%;height:100%;object-fit:cover;display:block;}
-        .clipboard-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;color:#0b1630;}
-        .clipboard-title{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .clipboard-snippet{font-size:12px;line-height:1.35;color:rgba(12,30,58,0.68);display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-        .clipboard-meta{font-size:10px;text-transform:uppercase;letter-spacing:0.4px;color:rgba(12,30,58,0.52);}
+        #homeClipboard{margin:0 auto;}
 
         main{display:flex;flex-direction:column;align-items:center;gap:40px;}
 
@@ -233,27 +148,39 @@
 
         @media (max-width:720px){
             .skyline-bar{flex-direction:column;gap:18px;}
-            .skyline-pill{padding:14px 24px;}
+            .skyline-center{width:100%;}
+            #homeClipboard{width:100%;}
             .flashcard-frame{width:100%;}
             .card-toolbar{flex-direction:column;}
         }
     </style>
+    <script src="assets/shared-clipboard.js" defer></script>
 </head>
 <body>
     <div class="frame">
-        <div class="skyline-bar" id="skylineBar">
+        <div class="skyline-bar">
             <a href="homepage.html" class="nav-btn" title="Назад" aria-label="Назад">
                 <span>←</span>
             </a>
-            <div class="skyline-capsule">
-                <div class="skyline-pill" id="skylineCapsule" role="button" tabindex="0" aria-expanded="false" aria-controls="skylinePanel">
-                    <span><strong id="navDate">—</strong></span>
-                    <span><strong id="navTime">—</strong></span>
-                    <span class="skyline-count" id="skylineCount" aria-hidden="true">0</span>
-                </div>
-                <div class="skyline-panel" id="skylinePanel" aria-hidden="true">
-                    <p class="clipboard-empty" id="clipboardEmpty">Плъзни файлове върху лентата, за да ги задържиш за по-късно.</p>
-                    <ul class="clipboard-list" id="clipboardList"></ul>
+            <div class="skyline-center">
+                <div id="homeClipboard" class="home-clipboard" role="region" aria-label="Skyline Clipboard">
+                    <button type="button" id="homeClipboardCapsule" class="home-clipboard-capsule" aria-expanded="false" aria-controls="homeClipboardPanel">
+                        <div class="home-clipboard-clock">
+                            <span class="home-clipboard-date" id="homeClipboardDate">—</span>
+                            <span class="home-clipboard-time" id="homeClipboardTime">—</span>
+                        </div>
+                        <span class="home-clipboard-label">Skyline Clipboard</span>
+                        <span class="home-clipboard-count" id="homeClipboardCount" aria-hidden="true">0</span>
+                        <span class="home-clipboard-open-hint">Drop files or double tap</span>
+                    </button>
+                    <div class="home-clipboard-panel" id="homeClipboardPanel" aria-hidden="true">
+                        <div class="home-clipboard-panel-head">
+                            <h3>Saved Files</h3>
+                            <span id="homeClipboardMeta">Свободно място</span>
+                        </div>
+                        <p class="home-clipboard-empty" id="homeClipboardEmpty">Плъзни файлове върху Skyline, за да ги запазиш за всяка страница.</p>
+                        <ul class="home-clipboard-list" id="homeClipboardList"></ul>
+                    </div>
                 </div>
             </div>
             <div class="profile-btn" title="Профил"><div class="profile-initials">BC</div></div>
@@ -294,13 +221,10 @@
             const LS_CARDS = 'flashcardStudio_cards_v2';
             const LS_DRAFT = 'flashcardStudio_draft_v3';
 
-            const navDate = document.getElementById('navDate');
-            const navTime = document.getElementById('navTime');
-            const skylineCapsule = document.getElementById('skylineCapsule');
-            const skylinePanel = document.getElementById('skylinePanel');
-            const skylineCount = document.getElementById('skylineCount');
-            const clipboardList = document.getElementById('clipboardList');
-            const clipboardEmpty = document.getElementById('clipboardEmpty');
+            const clockDate = document.getElementById('homeClipboardDate');
+            const clockTime = document.getElementById('homeClipboardTime');
+            const clipboardMeta = document.getElementById('homeClipboardMeta');
+            const clipboardList = document.getElementById('homeClipboardList');
 
             const flashcard = document.getElementById('flashcard');
             const frontEditable = document.getElementById('frontEditable');
@@ -313,18 +237,20 @@
             const summaryMeta = document.getElementById('summaryMeta');
 
             let cards = [];
-            let clipboardItems = [];
-            let clipboardOpen = false;
             let editingId = null;
             let statusTimer = null;
+            let clipboardObserver = null;
+            let clipboardInstance = null;
 
             function updateClock(){
                 const now = new Date();
-                navDate.textContent = now.toLocaleDateString('bg-BG',{ day:'2-digit', month:'2-digit', year:'numeric' });
-                navTime.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+                if(clockDate){
+                    clockDate.textContent = now.toLocaleDateString('bg-BG',{ day:'2-digit', month:'2-digit', year:'numeric' });
+                }
+                if(clockTime){
+                    clockTime.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+                }
             }
-            updateClock();
-            setInterval(updateClock, 60000);
 
             function showStatus(message){
                 if(statusTimer){ clearTimeout(statusTimer); }
@@ -490,21 +416,35 @@
                 showStatus('Създадена е дубликат карта.');
             }
 
-            summaryList.addEventListener('click', (event) => {
-                const actionBtn = event.target.closest('button');
-                const item = event.target.closest('.summary-item');
-                if(!item) return;
-                const id = item.dataset.id;
-                if(!id) return;
-                if(!actionBtn) return;
-                const action = actionBtn.dataset.action;
-                if(action === 'edit') startEdit(id);
-                if(action === 'delete') deleteCard(id);
-                if(action === 'duplicate') duplicateCard(id);
-            });
-
             function handleEditableInput(){
                 persistDraft();
+            }
+
+            function updateClipboardMeta(){
+                if(!clipboardMeta) return;
+                const count = clipboardList ? clipboardList.children.length : 0;
+                clipboardMeta.textContent = count ? `${count} ${count === 1 ? 'елемент' : 'елемента'}` : 'Свободно място';
+            }
+
+            function initClipboard(){
+                if(typeof window.initStudyClipboard !== 'function'){
+                    console.warn('[Flashcard Studio] Shared clipboard script не е намерен.');
+                    return;
+                }
+                clipboardInstance = window.initStudyClipboard({
+                    rootId:'homeClipboard',
+                    capsuleId:'homeClipboardCapsule',
+                    panelId:'homeClipboardPanel',
+                    listId:'homeClipboardList',
+                    countId:'homeClipboardCount',
+                    emptyId:'homeClipboardEmpty'
+                });
+
+                if(clipboardList && typeof MutationObserver === 'function'){
+                    clipboardObserver = new MutationObserver(updateClipboardMeta);
+                    clipboardObserver.observe(clipboardList, { childList:true });
+                    updateClipboardMeta();
+                }
             }
 
             frontEditable.addEventListener('input', handleEditableInput);
@@ -519,193 +459,38 @@
             newButton.addEventListener('click', resetCard);
             flipButton.addEventListener('click', () => flashcard.classList.toggle('flipped'));
 
+            summaryList.addEventListener('click', (event) => {
+                const actionBtn = event.target.closest('button');
+                const item = event.target.closest('.summary-item');
+                if(!item || !actionBtn) return;
+                const id = item.dataset.id;
+                const action = actionBtn.dataset.action;
+                if(action === 'edit') startEdit(id);
+                if(action === 'delete') deleteCard(id);
+                if(action === 'duplicate') duplicateCard(id);
+            });
+
             document.addEventListener('keydown', (event) => {
                 if((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's'){
                     event.preventDefault();
                     saveCard();
                 }
-                if(event.key === 'Escape' && clipboardOpen){
-                    setClipboardOpen(false);
+                if(event.key === 'Escape'){
+                    clipboardInstance?.close?.();
                 }
             });
 
-            function setClipboardOpen(state){
-                if(state === clipboardOpen) return;
-                clipboardOpen = state;
-                skylinePanel.classList.toggle('open', state);
-                skylinePanel.setAttribute('aria-hidden', state ? 'false' : 'true');
-                skylineCapsule.setAttribute('aria-expanded', state ? 'true' : 'false');
-                if(!state){
-                    skylinePanel.scrollTop = 0;
+            window.addEventListener('beforeunload', () => {
+                if(clipboardObserver){
+                    clipboardObserver.disconnect();
                 }
-            }
+            }, { once:true });
 
-            skylineCapsule.addEventListener('click', () => setClipboardOpen(!clipboardOpen));
-            skylineCapsule.addEventListener('keydown', (event) => {
-                if(event.key === 'Enter' || event.key === ' '){
-                    event.preventDefault();
-                    setClipboardOpen(!clipboardOpen);
-                }
-            });
-
-            document.addEventListener('click', (event) => {
-                if(!clipboardOpen) return;
-                if(event.target === skylineCapsule || skylineCapsule.contains(event.target)) return;
-                if(skylinePanel.contains(event.target)) return;
-                setClipboardOpen(false);
-            });
-
-            function updateClipboardUI(){
-                clipboardList.innerHTML = '';
-                skylineCapsule.classList.toggle('has-items', clipboardItems.length > 0);
-                skylineCount.textContent = String(clipboardItems.length);
-                skylineCount.setAttribute('aria-hidden', clipboardItems.length ? 'false' : 'true');
-                clipboardEmpty.setAttribute('aria-hidden', clipboardItems.length ? 'true' : 'false');
-
-                clipboardItems.forEach(item => {
-                    const li = document.createElement('li');
-                    li.className = 'clipboard-item';
-                    li.dataset.itemId = item.id;
-                    li.setAttribute('draggable','true');
-
-                    const preview = document.createElement('div');
-                    preview.className = 'clipboard-preview';
-                    if(item.previewKind === 'image' && item.previewUrl){
-                        const img = document.createElement('img');
-                        img.src = item.previewUrl;
-                        img.alt = item.name;
-                        preview.appendChild(img);
-                    } else {
-                        preview.textContent = item.previewIcon || '📄';
-                    }
-
-                    const info = document.createElement('div');
-                    info.className = 'clipboard-info';
-                    info.innerHTML = `
-                        <div class="clipboard-title">${item.name}</div>
-                        ${item.snippet ? `<div class="clipboard-snippet">${item.snippet}</div>` : ''}
-                        <div class="clipboard-meta">${item.type || 'Файл'} · ${formatBytes(item.size)}</div>`;
-
-                    li.append(preview, info);
-                    li.addEventListener('dragstart', (event) => {
-                        event.dataTransfer.effectAllowed = 'copy';
-                        event.dataTransfer.setData('text/plain', item.name);
-                        if(event.dataTransfer.items && item.file){
-                            try{ event.dataTransfer.items.add(item.file); }catch(err){}
-                        }
-                    });
-                    clipboardList.appendChild(li);
-                });
-            }
-
-            function formatBytes(bytes){
-                if(typeof bytes !== 'number' || Number.isNaN(bytes)) return '0 B';
-                const units = ['B','KB','MB','GB'];
-                let value = bytes;
-                let index = 0;
-                while(value >= 1024 && index < units.length - 1){
-                    value /= 1024;
-                    index += 1;
-                }
-                const formatted = value % 1 === 0 ? value : value.toFixed(1);
-                return `${formatted} ${units[index]}`;
-            }
-
-            function pickIcon(type){
-                if(!type) return '📄';
-                if(type.includes('image')) return '🖼️';
-                if(type.includes('video')) return '🎬';
-                if(type.includes('audio')) return '🎵';
-                if(type.includes('pdf')) return '📕';
-                if(type.includes('sheet')) return '📊';
-                if(type.includes('zip')) return '🗜️';
-                if(type.includes('text')) return '📝';
-                return '📄';
-            }
-
-            function prepareClipboardItem(file){
-                const item = {
-                    id: `${file.name}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    file,
-                    snippet: '',
-                    previewUrl: null,
-                    previewIcon: pickIcon(file.type || '')
-                };
-
-                if((file.type || '').startsWith('image/')){
-                    item.previewUrl = URL.createObjectURL(file);
-                    item.previewKind = 'image';
-                } else if((file.type || '').startsWith('text/')){
-                    file.slice(0,4096).text().then(text => {
-                        const cleaned = (text || '').replace(/\s+/g,' ').trim();
-                        if(cleaned){
-                            item.snippet = cleaned.slice(0, 140) + (cleaned.length > 140 ? '…' : '');
-                            updateClipboardUI();
-                        }
-                    }).catch(()=>{});
-                }
-
-                return item;
-            }
-
-            function captureFiles(list){
-                const files = Array.from(list || []);
-                if(!files.length) return;
-                files.forEach(file => clipboardItems.unshift(prepareClipboardItem(file)));
-                updateClipboardUI();
-                setClipboardOpen(true);
-            }
-
-            function isFileDrag(event){
-                const dt = event.dataTransfer;
-                if(!dt) return false;
-                const types = dt.types ? Array.from(dt.types) : [];
-                if(types.includes('Files')) return true;
-                if(types.length === 0) return true;
-                return dt.files && dt.files.length > 0;
-            }
-
-            ['dragenter','dragover'].forEach(type => {
-                skylineCapsule.addEventListener(type, (event) => {
-                    if(!isFileDrag(event)) return;
-                    event.preventDefault();
-                    skylineCapsule.style.setProperty('--glow','0.82');
-                    skylineCapsule.classList.add('drag-hover');
-                    event.dataTransfer.dropEffect = 'copy';
-                });
-            });
-
-            skylineCapsule.addEventListener('dragleave', () => {
-                skylineCapsule.style.setProperty('--glow','0.42');
-                skylineCapsule.classList.remove('drag-hover');
-            });
-
-            skylineCapsule.addEventListener('drop', (event) => {
-                if(!isFileDrag(event)) return;
-                event.preventDefault();
-                skylineCapsule.style.setProperty('--glow','0.42');
-                skylineCapsule.classList.remove('drag-hover');
-                captureFiles(event.dataTransfer.files);
-            });
-
-            skylineCapsule.addEventListener('mousemove', (event) => {
-                const rect = skylineCapsule.getBoundingClientRect();
-                const mx = ((event.clientX - rect.left) / rect.width) * 100;
-                const my = ((event.clientY - rect.top) / rect.height) * 100;
-                skylineCapsule.style.setProperty('--mx', `${mx}%`);
-                skylineCapsule.style.setProperty('--my', `${my}%`);
-            });
-
-            skylineCapsule.addEventListener('mouseleave', () => {
-                skylineCapsule.style.removeProperty('--mx');
-                skylineCapsule.style.removeProperty('--my');
-            });
-
+            updateClock();
+            setInterval(updateClock, 60000);
             loadState();
-            updateClipboardUI();
+            initClipboard();
+            updateClipboardMeta();
         })();
     </script>
 </body>
