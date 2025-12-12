@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study Space — Introduction</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/skyline.css" />
   <style>
     :root{
       --accent:#a7c8ff;
@@ -25,12 +26,12 @@
     }
 
     /* Topbar (minimal) */
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:clamp(14px,2.6vw,28px) clamp(18px,4vw,56px);position:sticky;top:0;z-index:10;background:linear-gradient(180deg, rgba(5,11,20,0.65), rgba(5,11,20,0.25));border-bottom:1px solid rgba(255,255,255,0.08);backdrop-filter:saturate(120%) blur(8px);transition: background .25s ease, box-shadow .25s ease, border-color .25s ease, transform .35s ease, opacity .25s ease}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:clamp(12px,3vw,24px);padding:clamp(14px,2.6vw,28px) clamp(18px,4vw,56px);position:sticky;top:0;z-index:20;background:linear-gradient(180deg, rgba(5,11,20,0.65), rgba(5,11,20,0.25));border-bottom:1px solid rgba(255,255,255,0.08);backdrop-filter:saturate(120%) blur(8px);transition: background .25s ease, box-shadow .25s ease, border-color .25s ease, transform .35s ease, opacity .25s ease}
     .topbar.scrolled{background:linear-gradient(180deg, rgba(5,11,20,0.85), rgba(5,11,20,0.35));border-bottom-color: rgba(255,255,255,0.12);box-shadow:0 8px 24px rgba(2,18,40,0.25)}
     .topbar.hide{ transform: translateY(-120%); opacity: 0; pointer-events: none; }
     .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#e9f5ff;font-weight:800;letter-spacing:0.4px;font-size:clamp(18px,2.4vw,24px)}
     .brand-badge{width:36px;height:36px;border-radius:50%;background:linear-gradient(90deg,#4f7bff,#00a0ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
-    .nav-actions{display:flex;align-items:center;gap:10px}
+    .nav-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px}
     .btn{border:0;background:transparent;color:#cfe2ff;text-decoration:none;font-weight:700;padding:8px 12px;border-radius:10px;transition:opacity .2s}
     .btn:hover{opacity:.9}
     .btn.primary{color:#fff;text-decoration:underline}
@@ -88,6 +89,107 @@
     .title-stage.is-tilted .glass-preview{ transform:translate3d(0,-6px,0) scale(1) rotateX(2deg) rotateY(-7deg) rotateZ(-1.2deg); box-shadow:0 50px 90px rgba(4,12,28,0.55) }
     .title-stage.is-tilted .glass-preview::before{ animation:glint 2.2s ease-out forwards }
 
+    [data-animate]{opacity:0;transform:translate3d(0,60px,0) scale(.98);transition:opacity .6s cubic-bezier(.23,.92,.18,1), transform .6s cubic-bezier(.23,.92,.18,1);will-change:transform,opacity}
+    [data-animate].is-visible{opacity:1;transform:translate3d(0,0,0) scale(1)}
+
+    .feature-band{position:relative;padding:clamp(68px,12vw,140px) clamp(20px,6vw,96px);margin-top:clamp(60px,12vw,160px);display:flex;justify-content:center}
+    .feature-band-inner{position:relative;z-index:1;width:min(1100px,100%);display:flex;flex-direction:column;gap:clamp(32px,6vw,56px)}
+    .feature-band-glow{position:absolute;inset:auto 0 -30%;height:420px;background:radial-gradient(ellipse at center, rgba(72,130,255,0.45), rgba(12,24,52,0) 65%);filter:blur(64px);opacity:.75;pointer-events:none}
+    .feature-head{text-align:center;display:flex;flex-direction:column;gap:clamp(12px,2.6vw,24px);max-width:min(640px,90vw);margin:0 auto}
+    .feature-head h2{margin:0;font-size:clamp(32px,5vw,64px);font-weight:800;color:#fff;letter-spacing:.24px}
+    .feature-head p{margin:0;color:rgba(220,235,255,0.78);font-size:clamp(16px,2.1vw,22px);line-height:1.6}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(18px,3vw,30px)}
+    .feature-card{position:relative;padding:clamp(22px,3.4vw,32px);border-radius:26px;background:linear-gradient(140deg, rgba(25,44,92,0.82), rgba(8,16,38,0.72));border:1px solid rgba(120,160,255,0.22);box-shadow:0 32px 84px rgba(4,12,30,0.46);overflow:hidden;display:flex;flex-direction:column;gap:16px;color:#f3f7ff;transition:transform .35s ease, box-shadow .35s ease, border-color .35s ease;backdrop-filter:blur(18px) saturate(140%)}
+    .feature-card::after{content:'';position:absolute;inset:-20% -10% auto;height:60%;background:radial-gradient(circle at var(--mx,50%) var(--my,30%), rgba(110,160,255,0.28), transparent 65%);opacity:0;transition:opacity .35s ease;pointer-events:none}
+    .feature-card.is-tilting{transform:rotateX(var(--tiltY,0deg)) rotateY(var(--tiltX,0deg)) translateY(-4px);box-shadow:0 48px 120px rgba(4,12,30,0.56)}
+    .feature-card:hover{border-color:rgba(150,200,255,0.46)}
+    .feature-card:hover::after{opacity:1}
+    .feature-icon{font-size:clamp(24px,4vw,36px);filter:drop-shadow(0 8px 18px rgba(86,132,255,0.65))}
+    .feature-card h3{margin:0;font-size:clamp(18px,3vw,24px);font-weight:700;letter-spacing:.24px}
+    .feature-card p{margin:0;font-size:clamp(14px,2vw,18px);color:rgba(210,225,255,0.82);line-height:1.6}
+
+    .skyline-section{position:relative;padding:clamp(70px,12vw,160px) clamp(20px,6vw,96px);display:flex;justify-content:center}
+    .skyline-section::before{content:'';position:absolute;inset:auto -20% -35%;height:460px;background:radial-gradient(ellipse at center, rgba(64,132,255,0.35), rgba(10,18,36,0));filter:blur(46px);opacity:.8;pointer-events:none}
+    .skyline-inner{position:relative;z-index:1;width:min(1080px,94vw);display:flex;flex-direction:column;align-items:center;gap:clamp(40px,6vw,70px)}
+    .skyline-copy{display:flex;flex-direction:column;gap:clamp(18px,3vw,28px);color:#f1f6ff;align-items:center;text-align:center;max-width:min(680px,90vw)}
+    .skyline-copy h2{margin:0;font-size:clamp(36px,5.6vw,72px);font-weight:800;letter-spacing:.4px;line-height:1.08;text-wrap:balance}
+    .skyline-copy p{margin:0;color:rgba(214,228,255,0.82);font-size:clamp(16px,2.2vw,20px);line-height:1.72}
+    .skyline-benefits{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(12px,3vw,20px)}
+    .skyline-benefits li{display:flex;gap:12px;align-items:center;padding:14px 18px;border-radius:18px;background:rgba(18,44,110,0.38);border:1px solid rgba(120,176,255,0.28);box-shadow:0 26px 60px rgba(4,18,54,0.42);font-size:clamp(14px,2vw,18px);color:rgba(220,232,255,0.86)}
+    .skyline-benefits span{flex:0 0 34px;height:34px;border-radius:12px;background:rgba(106,160,255,0.18);border:1px solid rgba(140,190,255,0.32);display:grid;place-items:center;font-size:16px;box-shadow:0 16px 40px rgba(12,32,82,0.35)}
+    .skyline-strip-wrapper{grid-column:1/-1;display:flex;justify-content:center;width:100%}
+    .skyline-strip{--clipboard-width:min(100%,940px);position:relative;width:var(--clipboard-width);margin:0 auto;border-radius:44px;background:linear-gradient(120deg, rgba(18,38,92,0.92), rgba(12,24,58,0.88));border:1px solid rgba(138,188,255,0.35);box-shadow:0 48px 140px rgba(4,16,48,0.64);backdrop-filter:blur(20px) saturate(160%);overflow:hidden;transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, background .28s ease}
+    .skyline-strip::before{content:'';position:absolute;inset:-40% 35% auto -25%;height:160%;background:radial-gradient(circle at center, rgba(90,140,255,0.35), transparent 65%);opacity:.75;filter:blur(10px);pointer-events:none}
+    .skyline-strip::after{content:'';position:absolute;inset:20% -15% -20% auto;background:radial-gradient(circle at top, rgba(52,94,255,0.25), transparent 70%);opacity:.6;pointer-events:none}
+    .skyline-strip.drag-ready{transform:scale(1.03);box-shadow:0 72px 180px rgba(12,32,92,0.78);border-color:rgba(176,224,255,0.65)}
+    .skyline-strip.has-items{border-color:rgba(176,224,255,0.56);box-shadow:0 64px 180px rgba(10,30,88,0.72)}
+    .skyline-strip.open{transform:translateY(-6px);border-color:rgba(192,232,255,0.66);box-shadow:0 80px 200px rgba(12,34,96,0.82)}
+    .skyline-strip:hover{transform:translateY(-4px);box-shadow:0 60px 180px rgba(10,28,88,0.75)}
+    .skyline-strip .home-clipboard-capsule{position:relative;z-index:1;width:100%;padding:clamp(28px,5.4vw,52px) clamp(32px,6vw,60px);display:grid;grid-template-columns:minmax(220px,1fr) minmax(160px,auto) minmax(220px,1fr);grid-template-areas:
+      "clock label hint"
+      "clock count hint";
+      gap:clamp(18px,4vw,32px);align-items:center}
+    .skyline-strip .home-clipboard-clock{grid-area:clock;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left}
+    .skyline-strip .home-clipboard-date{font-size:clamp(12px,1.8vw,14px);letter-spacing:0.34em;text-transform:uppercase;color:rgba(218,230,255,0.74);font-weight:600}
+    .skyline-strip .home-clipboard-time{font-size:clamp(38px,8vw,68px);font-weight:800;letter-spacing:0.14em;color:#f9fbff;text-shadow:0 18px 40px rgba(10,20,56,0.46)}
+    .skyline-strip .home-clipboard-label{grid-area:label;font-size:clamp(14px,2.6vw,18px);letter-spacing:0.5em;text-transform:uppercase;color:rgba(233,242,255,0.9);text-align:center}
+    .skyline-strip .home-clipboard-count{grid-area:count;justify-self:center;display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 24px;border-radius:999px;background:rgba(255,255,255,0.18);border:1px solid rgba(208,224,255,0.42);color:#f7fbff;font-size:12px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;box-shadow:0 18px 40px rgba(12,24,56,0.38)}
+    .skyline-strip .home-clipboard-count[aria-hidden="true"]{display:none}
+    .skyline-strip .home-clipboard-open-hint{grid-area:hint;letter-spacing:0.34em;font-size:11px;text-transform:uppercase;color:rgba(210,224,255,0.65);text-align:right}
+    .skyline-strip .home-clipboard-panel{width:calc(var(--clipboard-width) - clamp(0px,5vw,52px));padding:34px clamp(24px,4vw,40px)}
+    .skyline-strip .home-clipboard-panel-head h3{letter-spacing:0.24em;text-transform:uppercase}
+    .skyline-strip .home-clipboard-panel-head span{letter-spacing:0.18em;text-transform:uppercase}
+    .skyline-strip .home-clipboard-empty{text-align:center;font-size:13px;letter-spacing:0.14em;color:rgba(210,228,255,0.72)}
+
+    .journey-section{padding:clamp(60px,12vw,140px) clamp(20px,6vw,96px);display:flex;justify-content:center}
+    .journey-inner{width:min(980px,100%);display:flex;flex-direction:column;gap:clamp(36px,6vw,64px)}
+    .journey-head{text-align:center;display:flex;flex-direction:column;gap:clamp(12px,2.4vw,24px);max-width:min(620px,90vw);margin:0 auto}
+    .journey-head h2{margin:0;font-size:clamp(32px,5vw,62px);font-weight:800;color:#fff}
+    .journey-head p{margin:0;font-size:clamp(16px,2vw,20px);color:rgba(210,225,255,0.8);line-height:1.6}
+    .journey-track{position:relative;display:grid;gap:clamp(24px,4vw,38px)}
+    .journey-progress{position:absolute;left:calc(12px + clamp(6px,1vw,12px));top:0;bottom:0;width:2px;background:linear-gradient(to bottom, rgba(96,160,255,0.4), rgba(32,96,255,0));transform-origin:top}
+    .journey-step{position:relative;padding-left:clamp(60px,7vw,90px);display:flex;gap:18px;align-items:flex-start}
+    .journey-dot{position:absolute;left:0;top:8px;width:clamp(24px,3vw,28px);height:clamp(24px,3vw,28px);border-radius:50%;background:linear-gradient(135deg, #4c8dff, #60a5fa);box-shadow:0 20px 40px rgba(76,141,255,0.42)}
+    .journey-step h3{margin:0;font-size:clamp(18px,3vw,22px);font-weight:700;color:#fff;letter-spacing:.2px}
+    .journey-step p{margin:8px 0 0;color:rgba(210,225,255,0.76);font-size:clamp(15px,2vw,18px);line-height:1.6}
+
+    .cta-section{position:relative;margin:clamp(80px,14vw,180px) clamp(20px,5vw,60px);padding:clamp(46px,8vw,72px);border-radius:32px;background:linear-gradient(160deg, rgba(24,48,96,0.92), rgba(8,18,40,0.82));border:1px solid rgba(112,160,255,0.28);box-shadow:0 48px 120px rgba(4,12,30,0.55);overflow:hidden}
+    .cta-glow{position:absolute;inset:-30% -10% auto;height:460px;background:radial-gradient(ellipse at center, rgba(120,180,255,0.4), rgba(12,24,48,0));filter:blur(50px);opacity:.85;pointer-events:none}
+    .cta-content{position:relative;z-index:1;display:flex;flex-direction:column;gap:clamp(16px,3vw,24px);text-align:center;align-items:center}
+    .cta-content h2{margin:0;font-size:clamp(32px,5.4vw,68px);font-weight:800;color:#fff}
+    .cta-content p{margin:0;font-size:clamp(16px,2.2vw,20px);color:rgba(220,235,255,0.78);max-width:min(620px,90vw);line-height:1.7}
+    .cta-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(12px,3vw,18px)}
+    .cta-button{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:999px;font-weight:700;text-decoration:none;letter-spacing:.18em;text-transform:uppercase;font-size:13px;transition:transform .25s ease, box-shadow .25s ease}
+    .cta-button.primary{color:#0b162f;background:#fdfcff;box-shadow:0 26px 60px rgba(255,255,255,0.36)}
+    .cta-button.secondary{color:#f6fbff;background:rgba(255,255,255,0.14);border:1px solid rgba(160,190,255,0.4);box-shadow:0 22px 56px rgba(20,48,96,0.45)}
+    .cta-button:hover{transform:translateY(-3px)}
+
+    @media (max-width:1024px){
+      .topbar{flex-direction:column;text-align:center}
+      .nav-actions{justify-content:center}
+      .skyline-inner{grid-template-columns:1fr}
+    }
+
+    @media (max-width:720px){
+      .feature-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+      .journey-section{padding:clamp(40px,12vw,90px) clamp(16px,6vw,48px)}
+      .journey-step{padding-left:56px}
+      .journey-progress{left:18px}
+      .cta-actions{flex-direction:column}
+      .skyline-strip .home-clipboard-capsule{grid-template-columns:1fr;grid-template-areas:"clock" "label" "count" "hint";text-align:center;justify-items:center;gap:clamp(18px,7vw,28px);padding:clamp(30px,10vw,44px)}
+      .skyline-strip .home-clipboard-clock{text-align:center;align-items:center}
+      .skyline-strip .home-clipboard-label{letter-spacing:0.36em}
+      .skyline-strip .home-clipboard-open-hint{text-align:center;letter-spacing:0.26em}
+      .skyline-strip .home-clipboard-count{margin:0}
+      .skyline-strip .home-clipboard-time{font-size:clamp(38px,18vw,58px)}
+    }
+
+    @media (max-width:540px){
+      .feature-card{align-items:flex-start}
+      .journey-step{padding-left:50px}
+      .journey-dot{width:22px;height:22px}
+    }
+
     @keyframes glint{
       0%{ transform:translateX(-60%); opacity:0 }
       25%{ opacity:.42 }
@@ -98,11 +200,17 @@
     @media (prefers-reduced-motion: reduce){
       .word{transition:none !important}
       .info-section{transition:none !important; opacity:1 !important; transform:none !important; pointer-events:auto}
+      [data-animate]{transition:none !important;opacity:1 !important;transform:none !important}
+      .feature-card{transition:none !important}
+      .feature-card::after{transition:none !important}
+      .cta-button{transition:none !important}
+      .skyline-strip{transition:none !important}
     }
   </style>
+  <script src="assets/shared-clipboard.js" defer></script>
 </head>
 <body>
-  <header class="topbar">
+  <header class="topbar" id="introTopbar">
     <a class="brand" href="homepage.html" title="Go to Home">
       <span class="brand-badge">SS</span>
       <span>Study Space</span>
@@ -146,177 +254,496 @@
     </div>
   </section>
 
+  <section class="feature-band" id="featureBand">
+    <div class="feature-band-inner">
+      <header class="feature-head">
+        <h2 data-animate>Build your own study rhythm</h2>
+        <p data-animate>Stitch together timers, flashcards, boards, and playlists. Every block snaps into place with motion that feels alive.</p>
+      </header>
+      <div class="feature-grid">
+        <article class="feature-card" data-animate data-tilt>
+          <span class="feature-icon" aria-hidden="true">⏱</span>
+          <h3>Adaptive Pomodoro</h3>
+          <p>Switch between focus and recovery with smart streaks, live indicators, and automatic clipboard notes.</p>
+        </article>
+        <article class="feature-card" data-animate data-tilt>
+          <span class="feature-icon" aria-hidden="true">🧠</span>
+          <h3>Flashcard Studio</h3>
+          <p>Flip, remix, and sync cards directly from the Skyline clipboard—no copy-paste required.</p>
+        </article>
+        <article class="feature-card" data-animate data-tilt>
+          <span class="feature-icon" aria-hidden="true">🎧</span>
+          <h3>Sound Layers</h3>
+          <p>Blend ambience with playlists and focus noise. Keep favourite mixes one drop away across the entire workspace.</p>
+        </article>
+        <article class="feature-card" data-animate data-tilt>
+          <span class="feature-icon" aria-hidden="true">📊</span>
+          <h3>Progress Radar</h3>
+          <p>Visualise streaks, wins, and skill depth with softly animated charts that react to every completion.</p>
+        </article>
+      </div>
+    </div>
+    <div class="feature-band-glow" aria-hidden="true"></div>
+  </section>
+
+  <section class="skyline-section" id="skylineSection">
+    <div class="skyline-inner">
+      <div class="skyline-copy">
+        <h2 data-animate>Skyline keeps your focus orbit clean</h2>
+        <p data-animate>Collect every spark—key slides, transcripts, diagrams, even quick voice memos—and Skyline mirrors them anywhere you open Study Space. Stay grounded in your task while your resources float within reach.</p>
+        <ul class="skyline-benefits" data-animate>
+          <li><span aria-hidden="true">📎</span><div>Drag files straight from desktop, and Skyline quietly syncs them to your next session.</div></li>
+          <li><span aria-hidden="true">⚡</span><div>Pin high-priority assets so they glow at the top whenever you revisit the workspace.</div></li>
+          <li><span aria-hidden="true">🔁</span><div>Reuse materials instantly inside Flashcard Studio, timers, or shared study rooms.</div></li>
+        </ul>
+      </div>
+      <div class="skyline-strip-wrapper" data-animate>
+        <div id="introClipboard" class="home-clipboard skyline-strip" data-theme="dark" role="region" aria-label="Skyline clipboard">
+          <button type="button" id="introClipboardCapsule" class="home-clipboard-capsule" aria-expanded="false" aria-controls="introClipboardPanel">
+            <div class="home-clipboard-clock" aria-live="polite">
+              <span class="home-clipboard-date" id="introClipboardDate">—</span>
+              <span class="home-clipboard-time" id="introClipboardTime">—</span>
+            </div>
+            <span class="home-clipboard-label">Skyline Clipboard</span>
+            <span class="home-clipboard-count" id="introClipboardCount" aria-hidden="true">0</span>
+            <span class="home-clipboard-open-hint">Drop files or double tap</span>
+          </button>
+          <div class="home-clipboard-panel skyline-strip-panel" id="introClipboardPanel" aria-hidden="true">
+            <div class="home-clipboard-panel-head">
+              <h3 id="introClipboardHeading">Synced Files</h3>
+              <span id="introClipboardMeta">Drop files to begin</span>
+            </div>
+            <p class="home-clipboard-empty" id="introClipboardEmpty">Drop files onto Skyline to keep them orbiting every Study Space page.</p>
+            <ul class="home-clipboard-list" id="introClipboardList" aria-live="polite"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="journey-section" id="journeySection">
+    <div class="journey-inner">
+      <header class="journey-head">
+        <h2 data-animate>From first outline to final sprint</h2>
+        <p data-animate>Study Space guides you through each phase with tactile feedback, gentle motion, and just-in-time reminders.</p>
+      </header>
+      <div class="journey-track">
+        <div class="journey-progress" id="journeyProgress" aria-hidden="true"></div>
+        <article class="journey-step" data-animate>
+          <span class="journey-dot" aria-hidden="true"></span>
+          <div>
+            <h3>Collect</h3>
+            <p>Clip PDFs, slides, voice memos, and quick notes into Skyline. Everything stays in reach across pages and refreshes.</p>
+          </div>
+        </article>
+        <article class="journey-step" data-animate>
+          <span class="journey-dot" aria-hidden="true"></span>
+          <div>
+            <h3>Organise</h3>
+            <p>Drag blocks to your dashboard, link flashcards to sessions, and pivot layouts without breaking your momentum.</p>
+          </div>
+        </article>
+        <article class="journey-step" data-animate>
+          <span class="journey-dot" aria-hidden="true"></span>
+          <div>
+            <h3>Activate</h3>
+            <p>Run focus sprints, launch deep work timers, and invite accountability partners in one tap.</p>
+          </div>
+        </article>
+        <article class="journey-step" data-animate>
+          <span class="journey-dot" aria-hidden="true"></span>
+          <div>
+            <h3>Reflect</h3>
+            <p>Replay highlights, export key insights, and celebrate streaks with responsive visuals tuned to your wins.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section" id="ctaSection" data-animate>
+    <div class="cta-glow" aria-hidden="true"></div>
+    <div class="cta-content">
+      <h2>Your study oasis is ready</h2>
+      <p>Jump into the studio, drop your first resources into Skyline, and feel how fluid focused learning can be.</p>
+      <div class="cta-actions">
+        <a class="cta-button primary" href="Flashcardcreate.html">Open Flashcard Studio</a>
+        <a class="cta-button secondary" href="homepage.html">Explore the Dashboard</a>
+      </div>
+    </div>
+  </section>
+
   <script>
-    // Minimal scroll logic for hero only + typing loop + title underline
-    const sticky = document.getElementById('stickyHero');
-    const topbar = document.querySelector('.topbar');
-    const typedEl = document.getElementById('typed');
-    const heroShell = document.querySelector('.hero-shell');
+    (() => {
+      const root = document.documentElement;
+      const sticky = document.getElementById('stickyHero');
+      const topbar = document.getElementById('introTopbar');
+      const typedEl = document.getElementById('typed');
+      const heroShell = document.querySelector('.hero-shell');
+      const titleScene = document.getElementById('titleScene');
+      const easyWord = document.getElementById('easyWord');
+      const titleStage = document.querySelector('.title-stage');
+      const infoSection = document.getElementById('productivityCopy');
+      const tiltTargets = document.querySelectorAll('[data-tilt]');
+      const revealables = document.querySelectorAll('[data-animate]');
+      const journeySteps = document.querySelectorAll('.journey-step');
+      const journeyProgress = document.getElementById('journeyProgress');
+      const introClipboardRoot = document.getElementById('introClipboard');
+      const introClipboardList = document.getElementById('introClipboardList');
+      const introClipboardMeta = document.getElementById('introClipboardMeta');
+      const introClipboardDate = document.getElementById('introClipboardDate');
+      const introClipboardTime = document.getElementById('introClipboardTime');
 
-    const titleScene = document.getElementById('titleScene');
-    const easyWord = document.getElementById('easyWord');
-    const titleStage = document.querySelector('.title-stage');
-    const infoSection = document.getElementById('productivityCopy');
+      const words = ['Organise.', 'Focus.', 'Grow.'];
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let heroProgressValue = 0;
+      let wi = 0;
+      let ci = 0;
+      let deleting = false;
+      let paused = false;
+      let stopTyping = true;
+      let typingTimer = null;
+      let holdTimer = null;
+      let lastY = window.scrollY || 0;
+      const seenSteps = new Set();
+      let revealObserver = null;
+      let introClipboardObserver = null;
+      let introClipboardInstance = null;
+      let introClockTimer = null;
 
-    const words = ['Organise.', 'Focus.', 'Grow.'];
-    let heroProgressValue = 0;
-    let wi = 0, ci = 0; // word index, char index
-    let deleting = false, paused = false, stopTyping = true;
-    let typingTimer = null;
-    let holdTimer = null;
-
-    function clamp01(x){ return Math.max(0, Math.min(1, x)); }
-    function ease(t){ return t*t*(3-2*t); }
-
-    function heroProgress(){
-      const total = sticky.offsetHeight - window.innerHeight;
-      const rect = sticky.getBoundingClientRect();
-      const within = Math.min(Math.max(-rect.top, 0), total);
-      return total > 0 ? within / total : 0;
-    }
-
-    function sectionProgress(el){
-      const total = el.offsetHeight - window.innerHeight;
-      const rect = el.getBoundingClientRect();
-      const within = Math.min(Math.max(-rect.top, 0), total);
-      return total > 0 ? within / total : 0;
-    }
-
-    function animateHero(){
-      const p = heroProgress();
-      heroProgressValue = p;
-      const eased = ease(clamp01(p));
-      document.documentElement.style.setProperty('--p', eased.toFixed(4));
-      // Fully hide hero once halfway through the section
-      if(p >= 0.5){ heroShell.classList.add('gone'); } else { heroShell.classList.remove('gone'); }
-    }
-
-    function animateTitle(){
-      const p = sectionProgress(titleScene);
-      // Drive underline growth; starts soon after entering scene
-      const ul = clamp01(p * 1.3);
-      easyWord.style.setProperty('--ul', ul.toFixed(3));
-      const eased = ease(clamp01(p));
-      if(titleStage){
-        titleStage.classList.toggle('is-active', eased > 0.06);
-        titleStage.classList.toggle('is-tilted', eased > 0.66);
+      function clamp01(x){
+        return Math.max(0, Math.min(1, x));
       }
-    }
 
-    function schedule(nextIn){
-      if(stopTyping) return;
-      if(typingTimer){ clearTimeout(typingTimer); }
-      typingTimer = setTimeout(typeTick, nextIn);
-    }
-
-    function clearHoldTimer(){
-      if(holdTimer){
-        clearTimeout(holdTimer);
-        holdTimer = null;
+      function ease(t){
+        return t * t * (3 - 2 * t);
       }
-    }
 
-    function queueHold(delay){
-      clearHoldTimer();
-      holdTimer = setTimeout(()=>{
-        holdTimer = null;
-        if(stopTyping) return;
-        paused = false;
-        deleting = true;
-        schedule(80);
-      }, delay);
-    }
-
-    function sectionIsNearView(el, threshold = 0.65){
-      if(!el) return false;
-      const rect = el.getBoundingClientRect();
-      return rect.top < window.innerHeight * threshold;
-    }
-
-    function typeTick(){
-      typingTimer = null;
-      if(stopTyping) return;
-      const current = words[wi];
-
-      if(paused){ schedule(120); return; }
-
-      if(!deleting){
-        ci++;
-        typedEl.textContent = current.slice(0, ci);
-        if(ci >= current.length){
-          paused = true;
-          // Hold full word for ~3s while still in view
-          queueHold(3000);
-          return;
-        }
-        schedule(110);
-      } else {
-        ci--;
-        typedEl.textContent = current.slice(0, Math.max(0, ci));
-        if(ci <= 0){
-          deleting = false;
-          wi = (wi + 1) % words.length;
-          schedule(160);
-          return;
-        }
-        schedule(70);
+      function heroProgress(){
+        const total = sticky.offsetHeight - window.innerHeight;
+        const rect = sticky.getBoundingClientRect();
+        const within = Math.min(Math.max(-rect.top, 0), total);
+        return total > 0 ? within / total : 0;
       }
-    }
 
-    function setTypingEnabled(active){
-      if(reduceMotion) return;
-      if(active){
-        if(stopTyping){
-          stopTyping = false;
-          if(paused && !holdTimer){ queueHold(800); }
-          schedule(typingTimer ? 110 : 200);
-        }
-      } else if(!stopTyping){
-        stopTyping = true;
-        if(typingTimer){ clearTimeout(typingTimer); typingTimer = null; }
-        clearHoldTimer();
+      function sectionProgress(el){
+        const total = el.offsetHeight - window.innerHeight;
+        const rect = el.getBoundingClientRect();
+        const within = Math.min(Math.max(-rect.top, 0), total);
+        return total > 0 ? within / total : 0;
       }
-    }
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let lastY = window.scrollY || 0;
-
-    function onScroll(){
-      if(!reduceMotion){
-        animateHero();
-        animateTitle();
-        const rect = heroShell.getBoundingClientRect();
-        const heroVisible = !heroShell.classList.contains('gone') && rect.bottom > 0 && rect.top < window.innerHeight;
-        setTypingEnabled(heroVisible);
-        if(infoSection){
-          const heroDone = heroProgressValue >= 0.98;
-          if(heroDone && sectionIsNearView(infoSection, 0.9)){
-            infoSection.classList.add('is-visible');
+      function animateHero(){
+        const p = heroProgress();
+        heroProgressValue = p;
+        const eased = ease(clamp01(p));
+        root.style.setProperty('--p', eased.toFixed(4));
+        if(heroShell){
+          if(p >= 0.5){
+            heroShell.classList.add('gone');
           } else {
-            infoSection.classList.remove('is-visible');
+            heroShell.classList.remove('gone');
           }
         }
       }
-      
-      // Smart hide navbar
-      const y = window.scrollY || 0;
-      const down = y > lastY + 1; const up = y < lastY - 1;
-      if(y > 1){ topbar.classList.add('scrolled'); } else { topbar.classList.remove('scrolled'); }
-      if(down && y > 0){ topbar.classList.add('hide'); }
-      if(up || y <= 0){ topbar.classList.remove('hide'); }
-      lastY = y;
-    }
 
-    // Init
-    typedEl.textContent = '';
-    if(reduceMotion){
-      stopTyping = true;
-      typedEl.textContent = words[0];
-      if(infoSection){ infoSection.classList.add('is-visible'); }
-    }
-    onScroll();
-    window.addEventListener('scroll', ()=> requestAnimationFrame(onScroll), { passive:true });
-    window.addEventListener('resize', ()=> requestAnimationFrame(onScroll));
+      function animateTitle(){
+        const p = sectionProgress(titleScene);
+        const ul = clamp01(p * 1.3);
+        if(easyWord){
+          easyWord.style.setProperty('--ul', ul.toFixed(3));
+        }
+        const eased = ease(clamp01(p));
+        if(titleStage){
+          titleStage.classList.toggle('is-active', eased > 0.06);
+          titleStage.classList.toggle('is-tilted', eased > 0.66);
+        }
+      }
+
+      function schedule(nextIn){
+        if(stopTyping) return;
+        if(typingTimer){
+          clearTimeout(typingTimer);
+        }
+        typingTimer = setTimeout(typeTick, nextIn);
+      }
+
+      function clearHoldTimer(){
+        if(holdTimer){
+          clearTimeout(holdTimer);
+          holdTimer = null;
+        }
+      }
+
+      function queueHold(delay){
+        clearHoldTimer();
+        holdTimer = setTimeout(() => {
+          holdTimer = null;
+          if(stopTyping) return;
+          paused = false;
+          deleting = true;
+          schedule(80);
+        }, delay);
+      }
+
+      function sectionIsNearView(el, threshold = 0.65){
+        if(!el) return false;
+        const rect = el.getBoundingClientRect();
+        return rect.top < window.innerHeight * threshold;
+      }
+
+      function typeTick(){
+        typingTimer = null;
+        if(stopTyping) return;
+        const current = words[wi];
+
+        if(paused){
+          schedule(120);
+          return;
+        }
+
+        if(!deleting){
+          ci += 1;
+          typedEl.textContent = current.slice(0, ci);
+          if(ci >= current.length){
+            paused = true;
+            queueHold(3000);
+            return;
+          }
+          schedule(110);
+        } else {
+          ci -= 1;
+          typedEl.textContent = current.slice(0, Math.max(0, ci));
+          if(ci <= 0){
+            deleting = false;
+            wi = (wi + 1) % words.length;
+            schedule(160);
+            return;
+          }
+          schedule(70);
+        }
+      }
+
+      function setTypingEnabled(active){
+        if(reduceMotion) return;
+        if(active){
+          if(stopTyping){
+            stopTyping = false;
+            if(paused && !holdTimer){
+              queueHold(800);
+            }
+            schedule(typingTimer ? 110 : 200);
+          }
+        } else if(!stopTyping){
+          stopTyping = true;
+          if(typingTimer){
+            clearTimeout(typingTimer);
+            typingTimer = null;
+          }
+          clearHoldTimer();
+        }
+      }
+
+      function updateJourneyProgress(){
+        if(!journeyProgress) return;
+        const trackRect = journeyProgress.parentElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const scrollRatio = clamp01((viewportHeight - trackRect.top) / (trackRect.height + viewportHeight * 0.35));
+        const seenRatio = journeySteps.length ? (seenSteps.size / journeySteps.length) : 0;
+        const ratio = Math.max(scrollRatio, seenRatio);
+        journeyProgress.style.transform = `scaleY(${ratio.toFixed(3)})`;
+      }
+
+      function updateIntroClock(){
+        if(!introClipboardDate && !introClipboardTime){
+          return;
+        }
+        const now = new Date();
+        if(introClipboardTime){
+          introClipboardTime.textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }).toUpperCase();
+        }
+        if(introClipboardDate){
+          const dateString = now.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'2-digit', year:'numeric' });
+          introClipboardDate.textContent = dateString.replace(/,/g,'').toUpperCase();
+        }
+      }
+
+      function updateIntroMeta(){
+        if(!introClipboardMeta){
+          return;
+        }
+        const count = introClipboardList ? introClipboardList.children.length : 0;
+        introClipboardMeta.textContent = count
+          ? `${count} ${count === 1 ? 'file ready' : 'files ready'}`
+          : 'Drop files to begin';
+      }
+
+      function initIntroClipboard(){
+        if(!introClipboardRoot || typeof window.initStudyClipboard !== 'function'){
+          return;
+        }
+        introClipboardInstance = window.initStudyClipboard({
+          rootId:'introClipboard',
+          capsuleId:'introClipboardCapsule',
+          panelId:'introClipboardPanel',
+          listId:'introClipboardList',
+          countId:'introClipboardCount',
+          emptyId:'introClipboardEmpty',
+          instanceId:'skyline-intro'
+        });
+
+        if(introClipboardList && typeof MutationObserver === 'function'){
+          introClipboardObserver = new MutationObserver(() => {
+            updateIntroMeta();
+          });
+          introClipboardObserver.observe(introClipboardList, { childList:true });
+        }
+
+        introClipboardRoot.addEventListener('drop', () => {
+          window.setTimeout(() => {
+            if(introClipboardInstance && typeof introClipboardInstance.open === 'function'){
+              introClipboardInstance.open();
+            }
+          }, 160);
+        });
+
+        updateIntroMeta();
+      }
+
+      function onScroll(){
+        if(!reduceMotion){
+          animateHero();
+          animateTitle();
+          const rect = heroShell.getBoundingClientRect();
+          const heroVisible = !heroShell.classList.contains('gone') && rect.bottom > 0 && rect.top < window.innerHeight;
+          setTypingEnabled(heroVisible);
+          if(infoSection){
+            const heroDone = heroProgressValue >= 0.98;
+            if(heroDone && sectionIsNearView(infoSection, 0.9)){
+              infoSection.classList.add('is-visible');
+            } else if(!heroDone){
+              infoSection.classList.remove('is-visible');
+            }
+          }
+        }
+
+        const y = window.scrollY || 0;
+        const down = y > lastY + 1;
+        const up = y < lastY - 1;
+        if(y > 1){
+          topbar.classList.add('scrolled');
+        } else {
+          topbar.classList.remove('scrolled');
+        }
+        if(down && y > 0){
+          topbar.classList.add('hide');
+        }
+        if(up || y <= 0){
+          topbar.classList.remove('hide');
+        }
+        lastY = y;
+
+        updateJourneyProgress();
+      }
+
+      function handleReveal(entries){
+        entries.forEach(entry => {
+          if(entry.isIntersecting){
+            entry.target.classList.add('is-visible');
+            if(entry.target.classList.contains('journey-step')){
+              seenSteps.add(entry.target);
+              updateJourneyProgress();
+            }
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }
+
+      function attachTilt(card){
+        const handleMove = (event) => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width;
+          const y = (event.clientY - rect.top) / rect.height;
+          const tiltX = ((x - 0.5) * 14).toFixed(2);
+          const tiltY = ((0.5 - y) * 12).toFixed(2);
+          card.classList.add('is-tilting');
+          card.style.setProperty('--tiltX', `${tiltX}deg`);
+          card.style.setProperty('--tiltY', `${tiltY}deg`);
+          card.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
+        };
+
+        const reset = () => {
+          card.classList.remove('is-tilting');
+          card.style.removeProperty('--tiltX');
+          card.style.removeProperty('--tiltY');
+          card.style.removeProperty('--mx');
+          card.style.removeProperty('--my');
+        };
+
+        card.addEventListener('pointermove', (event) => {
+          if(event.pointerType === 'touch') return;
+          handleMove(event);
+        });
+        card.addEventListener('pointerleave', reset);
+        card.addEventListener('pointerup', reset);
+      }
+
+      function initReveal(){
+        if(!('IntersectionObserver' in window)){
+          revealables.forEach(el => el.classList.add('is-visible'));
+          return;
+        }
+        revealObserver = new IntersectionObserver(handleReveal, {
+          threshold:0.25,
+          rootMargin:'0px 0px -15% 0px'
+        });
+        revealables.forEach(el => revealObserver.observe(el));
+      }
+
+      function init(){
+        typedEl.textContent = '';
+        if(reduceMotion){
+          stopTyping = true;
+          typedEl.textContent = words[0];
+          if(infoSection){
+            infoSection.classList.add('is-visible');
+          }
+        }
+        tiltTargets.forEach(attachTilt);
+        initIntroClipboard();
+        updateIntroClock();
+        if(introClockTimer){
+          clearInterval(introClockTimer);
+        }
+        introClockTimer = window.setInterval(updateIntroClock, 60000);
+        initReveal();
+        updateJourneyProgress();
+        onScroll();
+        window.addEventListener('scroll', () => requestAnimationFrame(onScroll), { passive:true });
+        window.addEventListener('resize', () => requestAnimationFrame(() => {
+          updateJourneyProgress();
+          onScroll();
+        }));
+      }
+
+      window.addEventListener('beforeunload', () => {
+        if(revealObserver){
+          revealObserver.disconnect();
+        }
+        if(introClipboardObserver){
+          introClipboardObserver.disconnect();
+        }
+        if(introClockTimer){
+          clearInterval(introClockTimer);
+        }
+        if(introClipboardInstance && typeof introClipboardInstance.destroy === 'function'){
+          introClipboardInstance.destroy();
+        }
+      }, { once:true });
+
+      init();
+    })();
   </script>
 </body>
 </html>
