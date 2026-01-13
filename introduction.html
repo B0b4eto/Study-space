@@ -318,6 +318,11 @@
           </div>
         </div>
       </div>
+      <!-- Floating layout save/load controls -->
+      <div id="layoutTools" style="position:fixed;right:18px;bottom:18px;z-index:9999;display:flex;flex-direction:column;gap:8px">
+        <button id="introSaveLayout" style="padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#60a5fa,#1d4ed8);border:none;color:white">Save Layout</button>
+        <button id="introLoadLayout" style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.14);color:white">Load Layout</button>
+      </div>
     </div>
   </section>
 
@@ -700,6 +705,49 @@
         });
         revealables.forEach(el => revealObserver.observe(el));
       }
+
+      // Intro page layout save/load helpers
+      function collectTheme(){
+        const vars = ['--accent','--accent-soft','--glass','--glass-strong','--card-size','--text-primary'];
+        const root = getComputedStyle(document.documentElement);
+        const style = {};
+        vars.forEach(v => {
+          const val = root.getPropertyValue(v).trim();
+          if(val) style[v.replace(/--/,'')] = val;
+        });
+        return style;
+      }
+
+      async function introSaveLayout(){
+        if(!window.ssApi) return;
+        const style = collectTheme();
+        const resp = await ssApi.saveBlocks([{ block_key: 'global_theme', position: {}, style }]);
+        if(resp && resp.ok) alert('Layout saved'); else alert('Save failed');
+      }
+
+      async function introLoadLayout(){
+        if(!window.ssApi) return;
+        const resp = await ssApi.getBlocks();
+        if(!resp || !resp.ok) return alert('Load failed');
+        const blocks = resp.blocks || [];
+        const theme = blocks.find(b => b.block_key === 'global_theme');
+        if(theme && theme.style){
+          Object.keys(theme.style).forEach(k => {
+            try{ document.documentElement.style.setProperty('--' + k, theme.style[k]); }catch(e){}
+          });
+          alert('Layout applied');
+        } else {
+          alert('No saved layout found');
+        }
+      }
+
+      // hook buttons
+      setTimeout(() => {
+        const saveBtn = document.getElementById('introSaveLayout');
+        const loadBtn = document.getElementById('introLoadLayout');
+        if(saveBtn) saveBtn.addEventListener('click', introSaveLayout);
+        if(loadBtn) loadBtn.addEventListener('click', introLoadLayout);
+      }, 200);
 
       function init(){
         typedEl.textContent = '';
