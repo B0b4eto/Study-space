@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect Apps</title>
+
+<style>
+    /* COLOR VARIABLES (dynamic theme) */
+    :root {
+        --accent: #3282b8;
+        --background1: #0a2a43;
+        --background2: #0f4c75;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, var(--background1), var(--background2));
+        color: white;
+        overflow-x: hidden;
+    }
+
+    /* PAGE TITLE */
+    h1 {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 45px;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CONTAINER */
+    .wrapper {
+        width: 95%;
+        max-width: 1200px;
+        margin: auto;
+        margin-top: 40px;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+        font-size: 25px;
+        margin: 20px 0 10px;
+        opacity: 0.8;
+    }
+
+    /* GRID */
+    .app-grid, .connected-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 20px;
+    }
+
+    /* APP CARD */
+    .app-card {
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(18px);
+        border-radius: 18px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        animation: fadeUp 0.4s ease;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .app-card:hover {
+        transform: translateY(-8px);
+        background: rgba(255,255,255,0.20);
+    }
+
+    .app-card img {
+        width: 55px;
+        height: 55px;
+        margin-bottom: 10px;
+    }
+
+    .add-btn {
+        background: var(--accent);
+        border: none;
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .add-btn:hover {
+        filter: brightness(1.2);
+    }
+
+    .remove-btn {
+        background: #d9534f;
+        border: none;
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        color: white;
+        transition: 0.3s;
+    }
+
+    .remove-btn:hover {
+        filter: brightness(1.2);
+    }
+
+    .empty-text {
+        text-align: center;
+        font-size: 18px;
+        opacity: 0.7;
+        padding: 20px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Connect Apps</h1>
+
+<div class="wrapper">
+
+    <!-- Recommended Apps -->
+    <div class="section-title">Recommended Apps</div>
+    <div class="app-grid" id="recommendedGrid">
+        <!-- Apps appear here -->
+    </div>
+
+    <!-- Connected Apps -->
+    <div class="section-title">Your Connected Apps</div>
+    <div class="connected-grid" id="connectedGrid">
+        <div class="empty-text" id="emptyText">You haven't connected any apps yet.</div>
+    </div>
+
+</div>
+
+<script>
+// robust theme applier — call applyTheme() on DOMContentLoaded and after rendering dynamic content
+function applyTheme() {
+  // try many keys so older/newer pages all work
+  const accent = localStorage.getItem("accentColor") || localStorage.getItem("accent") || "#3282b8";
+  const bg = localStorage.getItem("bgColor") ||
+             localStorage.getItem("backgroundColor") ||
+             localStorage.getItem("backgroundColor1") ||
+             "#0a2a43";
+  const bg2 = localStorage.getItem("backgroundColor2") || lightenHex(bg, 0.12);
+
+  // set CSS variables
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--background1', bg);
+  document.documentElement.style.setProperty('--background2', bg2);
+
+  // set inline background (for pages that used body background set)
+  document.body.style.background = `linear-gradient(135deg, ${bg}, ${bg2})`;
+
+  // color buttons that use .add-btn
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.style.background = accent;
+    btn.style.borderColor = 'transparent';
+  });
+
+  // card hover glow via dynamic style (replaces previously appended duplicates)
+  let themeStyle = document.getElementById('theme-dynamic-style');
+  if (!themeStyle) {
+    themeStyle = document.createElement('style');
+    themeStyle.id = 'theme-dynamic-style';
+    document.head.appendChild(themeStyle);
+  }
+  themeStyle.textContent = `
+    .app-card:hover { box-shadow: 0 0 25px ${accent}55; transform: translateY(-8px); }
+    .add-btn:hover { filter: brightness(1.12); }
+  `;
+}
+
+// helper copied from your edit-profile.js
+function hexToRgb(hex){
+  if(!hex) return null;
+  hex = hex.replace('#','');
+  if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function rgbToHex(r,g,b){
+  const toHex = (n)=> ('0'+Math.round(n).toString(16)).slice(-2);
+  return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+function lightenHex(hex, amount){
+  const rgb = hexToRgb(hex) || {r:233,g:246,b:255};
+  const r = Math.round(rgb.r + (255 - rgb.r) * amount);
+  const g = Math.round(rgb.g + (255 - rgb.g) * amount);
+  const b = Math.round(rgb.b + (255 - rgb.b) * amount);
+  return rgbToHex(r,g,b);
+}
+
+// apply early and again after DOM content
+document.addEventListener('DOMContentLoaded', applyTheme);
+
+
+
+
+
+/* APPLY USER'S SAVED THEME */
+function applyTheme() {
+    const accent = localStorage.getItem("accentColor");
+    const bg1 = localStorage.getItem("backgroundColor1");
+    const bg2 = localStorage.getItem("backgroundColor2");
+
+    if (accent) document.documentElement.style.setProperty("--accent", accent);
+    if (bg1) document.documentElement.style.setProperty("--background1", bg1);
+    if (bg2) document.documentElement.style.setProperty("--background2", bg2);
+}
+
+applyTheme();
+
+/* LIST OF APPS */
+const apps = [
+    { name: "Spotify", icon: "https://cdn-icons-png.flaticon.com/512/174/174872.png" },
+    { name: "Shazam", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968705.png" },
+    { name: "Weather", icon: "https://cdn-icons-png.flaticon.com/512/1163/1163661.png" },
+    { name: "Binance", icon: "https://cdn-icons-png.flaticon.com/512/825/825540.png" },
+    { name: "ChatGPT", icon: "https://cdn-icons-png.flaticon.com/512/1077/1077012.png" },
+    { name: "Notes", icon: "https://cdn-icons-png.flaticon.com/512/1827/1827279.png" },
+    { name: "Notion", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968705.png" },
+    { name: "Calendar", icon: "https://cdn-icons-png.flaticon.com/512/747/747310.png" },
+    { name: "Photos", icon: "https://cdn-icons-png.flaticon.com/512/1829/1829580.png" },
+    { name: "YouTube", icon: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png" },
+    { name: "Gmail", icon: "https://cdn-icons-png.flaticon.com/512/5968/5968534.png" },
+    { name: "Google Drive", icon: "https://cdn-icons-png.flaticon.com/512/2965/2965323.png" },
+];
+
+/* HTML REFERENCES */
+const recommendedGrid = document.getElementById("recommendedGrid");
+const connectedGrid = document.getElementById("connectedGrid");
+const emptyText = document.getElementById("emptyText");
+
+/* RENDER RECOMMENDED APPS */
+apps.forEach(app => {
+    const card = document.createElement("div");
+    card.classList.add("app-card");
+    card.innerHTML = `
+        <img src="${app.icon}">
+        <h3>${app.name}</h3>
+        <button class="add-btn" onclick="addApp('${app.name}')">Add</button>
+    `;
+    recommendedGrid.appendChild(card);
+});
+
+/* CONNECT APPS */
+let connectedApps = JSON.parse(localStorage.getItem("connectedApps")) || [];
+
+function addApp(name) {
+    if (!connectedApps.includes(name)) {
+        connectedApps.push(name);
+        localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
+        renderConnected();
+    }
+}
+
+function removeApp(name) {
+    connectedApps = connectedApps.filter(app => app !== name);
+    localStorage.setItem("connectedApps", JSON.stringify(connectedApps));
+    renderConnected();
+}
+
+/* RENDER CONNECTED APPS */
+function renderConnected() {
+    connectedGrid.innerHTML = "";
+
+    if (connectedApps.length === 0) {
+        connectedGrid.appendChild(emptyText);
+        emptyText.style.display = "block";
+        return;
+    }
+
+    emptyText.style.display = "none";
+
+    connectedApps.forEach(name => {
+        const app = apps.find(a => a.name === name);
+
+        const card = document.createElement("div");
+        card.classList.add("app-card");
+        card.innerHTML = `
+            <img src="${app.icon}">
+            <h3>${app.name}</h3>
+            <button class="remove-btn" onclick="removeApp('${app.name}')">Remove</button>
+        `;
+        connectedGrid.appendChild(card);
+    });
+}
+
+renderConnected();
+</script>
+
+</body>
+</html>
