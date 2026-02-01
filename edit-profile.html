@@ -7,18 +7,7 @@
   <link rel="stylesheet" href="edit-profile.css">
 </head>
 <body>
-  <main class="container">
-    <nav class="top-menu">
-      <a class="home-link" href="homepage.html">← Home</a>
-      <div class="menu-wrap">
-        <button id="menuBtn" class="menu-btn" aria-haspopup="true" aria-expanded="false">☰</button>
-        <ul id="menuDropdown" class="menu-dropdown" role="menu" aria-hidden="true">
-          <li role="none"><a role="menuitem" href="homepage.html">Home</a></li>
-          <li role="none"><a role="menuitem" href="account.html">Account settings</a></li>
-          <li role="none"><a role="menuitem" href="edit-profile.html">Profile editor</a></li>
-        </ul>
-      </div>
-    </nav>
+  <main class="container">   
     <header>
       <h1>Avatar Builder</h1>
       <p class="desc">Pick skin, hair, hat, expression and shirt.</p>
@@ -58,20 +47,6 @@
             </svg>
           </button>
         </div>
-        <!-- avatar menu: placed under the avatar preview -->
-        <div class="avatar-menu">
-          <button id="menuBtn" class="hamburger" aria-haspopup="true" aria-expanded="false" aria-controls="menuDropdown">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-          </button>
-          <a href="homepage.html" class="home-btn">Home</a>
-          <ul id="menuDropdown" class="menu-dropdown" role="menu" aria-hidden="true">
-            <li role="none"><a role="menuitem" href="homepage.html">Home</a></li>
-            <li role="none"><a role="menuitem" href="account.html">Account settings</a></li>
-            <li role="none"><a role="menuitem" href="connect-apps.html">Connect apps</a></li>
-          </ul>
-        </div>
       </div>
 
       <aside class="col right-col">
@@ -93,6 +68,23 @@
         </div>
       </aside>
     </section>
+
+
+    <div class="profile-upload">
+        <label for="profileUpload">Upload profile picture</label>
+        <input type="file" id="profileUpload" accept="image/*">
+        <!-- choose which source to use when saving -->
+        <div class="avatar-source" style="margin:8px 0;font-size:13px">
+          <label style="margin-right:12px"><input type="radio" name="avatarSource" id="avatarSourceGenerated" value="generated" checked> Use generated avatar</label>
+          <label><input type="radio" name="avatarSource" id="avatarSourceUploaded" value="uploaded"> Use uploaded image</label>
+        </div>
+
+        <img src="assets/default-avatar.png" class="profile-icon" id="profileIcon" style="width:88px;height:88px;border-radius:12px;display:block;margin-top:8px">
+
+      </div>
+
+
+
     
     <!-- Profile fields: placed below customization and spanning full width -->
     <section class="profile-fields">
@@ -123,7 +115,7 @@
         </div>
       </div>
       <div class="actions profile-actions">
-        <button id="saveProfileBtn" type="button" class="save-btn">Save changes</button>
+        <button id="saveProfileBtn" type="button" class="save-btn" onclick="saveTheme()">Save changes</button>
       </div>
     </section>
     
