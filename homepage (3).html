@@ -1260,7 +1260,7 @@
              </div>
 
              <div class="profile-container">
-                <img src="images/user.png" id="profileBtn" class="profile-icon">
+                <img src="assets/default-avatar.png" id="profileBtn" class="profile-icon">
 
                 <div class="profile-dropdown" id="profileDropdown">
 
@@ -1520,6 +1520,68 @@
       </div>
 
       <script>
+        // Background
+        // robust theme applier — call applyTheme() on DOMContentLoaded and after rendering dynamic content
+        function applyTheme() {
+          // try many keys so older/newer pages all work
+          const accent = localStorage.getItem("accentColor") || localStorage.getItem("accent") || "#3282b8";
+          const bg = localStorage.getItem("bgColor") ||
+                     localStorage.getItem("backgroundColor") ||
+                     localStorage.getItem("backgroundColor1") ||
+                     "#0a2a43";
+          const bg2 = localStorage.getItem("backgroundColor2") || lightenHex(bg, 0.12);
+
+          // set CSS variables
+          document.documentElement.style.setProperty('--accent', accent);
+          document.documentElement.style.setProperty('--background1', bg);
+          document.documentElement.style.setProperty('--background2', bg2);
+
+          // set inline background (for pages that used body background set)
+          document.body.style.background = `linear-gradient(135deg, ${bg}, ${bg2})`;
+        
+          // color buttons that use .add-btn
+          document.querySelectorAll('.add-btn').forEach(btn => {
+            btn.style.background = accent;
+            btn.style.borderColor = 'transparent';
+          });
+
+          // card hover glow via dynamic style (replaces previously appended duplicates)
+          let themeStyle = document.getElementById('theme-dynamic-style');
+          if (!themeStyle) {
+            themeStyle = document.createElement('style');
+            themeStyle.id = 'theme-dynamic-style';
+            document.head.appendChild(themeStyle);
+          }
+          themeStyle.textContent = `
+            .app-card:hover { box-shadow: 0 0 25px ${accent}55; transform: translateY(-8px); }
+            .add-btn:hover { filter: brightness(1.12); }
+          `;
+        }
+            
+        // helper copied from your edit-profile.js
+        function hexToRgb(hex){
+          if(!hex) return null;
+          hex = hex.replace('#','');
+          if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+          const num = parseInt(hex,16);
+          return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+        }
+        function rgbToHex(r,g,b){
+          const toHex = (n)=> ('0'+Math.round(n).toString(16)).slice(-2);
+          return '#' + toHex(r) + toHex(g) + toHex(b);
+        }
+        function lightenHex(hex, amount){
+          const rgb = hexToRgb(hex) || {r:233,g:246,b:255};
+          const r = Math.round(rgb.r + (255 - rgb.r) * amount);
+          const g = Math.round(rgb.g + (255 - rgb.g) * amount);
+          const b = Math.round(rgb.b + (255 - rgb.b) * amount);
+          return rgbToHex(r,g,b);
+        }
+        
+        // apply early and again after DOM content
+        document.addEventListener('DOMContentLoaded', applyTheme);
+
+          
         // Account Dropdown Toggle
         const profileBtn = document.getElementById("profileBtn");
         const profileDropdown = document.getElementById("profileDropdown");
