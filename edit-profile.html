@@ -4,7 +4,139 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Avatar Builder — Component Sprite Sheet</title>
-  <link rel="stylesheet" href="edit-profile.css">
+  <style>
+    :root{
+  --bg-1: #e9f6ff;
+  --bg-2: #f4fbff;
+  --card: #ffffff;
+  --accent: #2f7cd4;
+  --muted: #4d6f8f;
+  --preview-size: 420px; /* slightly reduced preview for two-column */
+  --content-max: 1100px;   /* center content width */
+}
+
+/* reset */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;color:var(--muted);background:linear-gradient(180deg,var(--bg-1),var(--bg-2));}
+.container{max-width:1100px;margin:28px auto;padding:18px}
+  
+
+        
+/* avatar-menu placed under preview */
+.avatar-menu{margin-top:14px;display:flex;align-items:center;gap:12px;justify-content:center}
+.home-btn{padding:8px 12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,250,255,0.95));border:1px solid rgba(0,0,0,0.04);color:var(--accent);font-weight:700;text-decoration:none;transition:transform 220ms ease, box-shadow 220ms ease}
+.home-btn:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(47,124,212,0.10)}
+
+/* hamburger button: three lines morph to X */
+.hamburger{width:44px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:transparent;border:1px solid rgba(0,0,0,0.06);cursor:pointer;padding:6px;transition:background 200ms ease}
+.hamburger .bar{display:block;width:20px;height:2px;background:var(--accent);margin:3px 0;transition:transform 260ms cubic-bezier(.2,.9,.3,1), opacity 160ms, background 160ms}
+.hamburger.open{background:linear-gradient(180deg,var(--accent),#256fb3)}
+.hamburger.open .bar{background:#fff}
+.hamburger.open .bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open .bar:nth-child(2){opacity:0}
+.hamburger.open .bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.menu-dropdown{position:absolute;top:48px;left:50%;transform:translateX(-50%);min-width:220px}
+
+/* layout */
+.builder{display:grid;grid-template-columns:320px 1fr 320px;gap:28px;max-width:var(--content-max);margin:0 auto;align-items:start;padding:18px}
+.left, .col{display:flex;flex-direction:column;gap:14px}
+.left-col{align-items:flex-start}
+.center-col{align-items:center}
+.right-col{align-items:flex-start}
+
+/* preview area: stacked layers */
+.preview-wrap{
+  width:var(--preview-size);
+  height:var(--preview-size);
+  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(245,250,255,0.9));
+  border:1px solid rgba(0,0,0,0.06);
+  box-shadow:0 14px 40px rgba(10,30,80,0.06);
+  position:relative;overflow:hidden;display:block;
+}
+
+/* export button overlay (small rounded) */
+.export-btn{
+  position:absolute;right:12px;top:12px;z-index:30;width:40px;height:40px;border-radius:10px;background:linear-gradient(180deg,var(--accent),#256fb3);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(47,124,212,0.18)
+}
+.export-btn svg{display:block}
+
+/* save button for profile page */
+.profile-actions{max-width:var(--content-max);margin:18px auto;padding:0 14px;display:flex;justify-content:flex-end}
+.save-btn{padding:12px 18px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--accent),#256fb3);color:#fff;cursor:pointer;box-shadow:0 12px 34px rgba(47,124,212,0.12);font-weight:700}
+.save-btn:active{transform:translateY(1px)}
+.save-btn.saving{opacity:0.8;transform:scale(0.98)}
+.save-btn.saved{background:linear-gradient(180deg,#2ecc71,#28b463)}
+
+.center-meta{width:var(--preview-size);max-width:96%;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.center-meta .question-card{width:100%}
+.center-meta input[type="text"], .center-meta textarea, .center-meta input[type="color"]{width:100%}
+
+/* full-width profile fields placed under customization */
+.profile-fields{max-width:var(--content-max);margin:18px auto 40px;padding:0 14px}
+.profile-fields .center-meta.full-width{display:flex;flex-direction:column;gap:12px;width:100%}
+.profile-fields .question-card.wide{width:100%;padding:16px}
+.profile-fields .question-card.wide textarea{min-height:120px}
+.profile-fields .question-card.wide input{height:44px}
+
+/* each layer is a div with same background-image = sprite sheet; we compute background-position in JS */
+.layer{
+  position:absolute;left:0;top:0;right:0;bottom:0;background-repeat:no-repeat;background-size:cover;pointer-events:none;
+}
+
+/* fade-in transition for layers */
+.layer-fade{opacity:0;transform:translateY(10px) scale(0.995);transition:opacity 360ms cubic-bezier(.2,.9,.3,1), transform 360ms cubic-bezier(.2,.9,.3,1)}
+.layer-fade.show{opacity:1;transform:none}
+
+/* slight back shade to add depth */
+.layer-back{filter:brightness(0.98) saturate(0.96);opacity:0.98;}
+
+/* controls under preview */
+.preview-controls{display:none}
+.btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:var(--card);cursor:pointer}
+.primary{background:linear-gradient(180deg,var(--accent),#256fb3);color:#fff;border:none}
+
+.note{font-size:13px;color:var(--muted)}
+
+/* options area */
+.control-group{background:transparent;padding:8px;border-radius:10px;margin-bottom:10px}
+.control-group h3{margin:6px 0;color:var(--accent);font-size:15px}
+.option-row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* option thumbnail (represents a single frame from the sheet) */
+.option{
+  width:64px;height:64px;border-radius:10px;overflow:hidden;background-repeat:no-repeat;background-size:cover;background-position:0 0;border:2px solid transparent;cursor:pointer;
+  transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.option:hover{transform:translateY(-6px);box-shadow:0 10px 24px rgba(47,124,212,0.08)}
+.option.selected{outline:3px solid rgba(47,124,212,0.18);transform:translateY(-8px);box-shadow:0 18px 36px rgba(47,124,212,0.12)}
+
+/* question card style */
+.question-list{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:0;align-items:stretch}
+.question-card{width:100%;background:linear-gradient(180deg, #ffffff, #fbfdff);border-radius:12px;padding:14px;border:1px solid rgba(20,40,80,0.04);box-shadow:0 8px 20px rgba(10,30,60,0.04);transition:transform 260ms cubic-bezier(.2,.9,.3,1),box-shadow 260ms,opacity 420ms ease, transform 420ms ease}
+.question-card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(10,30,60,0.08)}
+.question-card h3{margin:0 0 8px 0;font-size:15px;color:var(--accent)}
+.question-card textarea{width:100%;min-height:96px;padding:12px;border-radius:10px;border:1px solid rgba(20,40,80,0.06);resize:none}
+.question-card input{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(20,40,80,0.06)}
+
+/* initial hidden state for entrance animation */
+.question-card{opacity:0;transform:translateY(12px)}
+.question-card.show{opacity:1;transform:none}
+
+/* subtle entrance animation for preview */
+.preview-wrap{transition:box-shadow 260ms ease, transform 260ms ease}
+.preview-wrap:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(10,30,60,0.08)}
+
+/* small responsive changes */
+@media(max-width:920px){
+  .builder{display:flex;flex-direction:column;align-items:center}
+  .left{width:100%}
+  .preview-wrap{width:320px;height:320px}
+  .builder{padding:10px}
+}
+
+  </style>>
 </head>
 <body>
   <main class="container">   
@@ -121,6 +253,679 @@
     
   </main>
 
-  <script src="edit-profile.js"></script>
+  <script>
+        /* app.js — component sprite builder
+      Place your sprite-sheet at: images/avatar-components-spritesheet.png
+      The sheet is a grid with COLS x ROWS frames. Change FRAME_W/FRAME_H / COLS/ROWS if your sheet differs.
+    */
+
+
+    const SPRITE = 'images/avatar-components-spritesheet.png';
+
+    // CONFIG: update if your sprite frames use different size / grid
+    const FRAME_W = 256;   // width of each frame in sprite (px)
+    const FRAME_H = 256;   // height of each frame in sprite (px)
+    const COLS = 10;
+    const ROWS = 4;
+    const TOTAL = COLS * ROWS; // should be 40 for our layout
+
+    // index ranges for each component (0-based)
+    const RANGES = {
+      skin: { start: 0, count: 10 },      // indices 0 .. 9
+      hair: { start: 10, count: 10 },     // 10 .. 19
+      hat:  { start: 20, count: 10 },     // 20 .. 29
+      expr: { start: 30, count: 5 },      // 30 .. 34
+      shirt:{ start: 35, count: 5 }       // 35 .. 39
+    };
+
+    // DOM refs
+    const layerSkin = document.getElementById('layer-skin');
+    const layerHair = document.getElementById('layer-hair');
+    const layerHat = document.getElementById('layer-hat');
+    const layerExpr = document.getElementById('layer-expression');
+    const layerShirt = document.getElementById('layer-shirt');
+    const layerShade = document.getElementById('layer-shade');
+
+    const skinRow = document.getElementById('skinRow');
+    const hairRow = document.getElementById('hairRow');
+    const hatRow = document.getElementById('hatRow');
+    const exprRow = document.getElementById('exprRow');
+    const shirtRow = document.getElementById('shirtRow');
+
+    // control buttons removed from UI; no DOM refs for them
+
+    const previewWrap = document.querySelector('.preview-wrap');
+
+    const LOCAL_KEY = 'avatar_components_v1';
+
+    // inputs for about/nick
+    const nickInput = document.getElementById('nick');
+    const aboutInput = document.getElementById('about');
+
+    // utility: convert frame index -> {col,row}
+    function frameToCR(index){
+      const col = index % COLS;
+      const row = Math.floor(index / COLS);
+      return {col, row};
+    }
+
+    // color helpers: hex <-> rgb and lighten by blending toward white
+    function hexToRgb(hex){
+      if(!hex) return null;
+      hex = hex.replace('#','');
+      if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+      const num = parseInt(hex,16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
+    function rgbToHex(r,g,b){
+      const toHex = (n)=> ('0'+Math.round(n).toString(16)).slice(-2);
+      return '#' + toHex(r) + toHex(g) + toHex(b);
+    }
+    function lightenHex(hex, amount){
+      // amount: 0..1 - how much to blend towards white
+      const rgb = hexToRgb(hex) || {r:233,g:246,b:255};
+      const r = Math.round(rgb.r + (255 - rgb.r) * amount);
+      const g = Math.round(rgb.g + (255 - rgb.g) * amount);
+      const b = Math.round(rgb.b + (255 - rgb.b) * amount);
+      return rgbToHex(r,g,b);
+    }
+
+    // utility: set background on a given layer element to show a specific frame
+    function setLayerFrame(el, frameIndex){
+      if(frameIndex == null){
+        // hide animated layer if present
+        if(el.classList.contains('layer-fade')) el.classList.remove('show');
+        el.style.backgroundImage = 'none';
+        return;
+      }
+      // compute preview element size and scale to show one frame exactly
+      const elW = previewWrap.clientWidth;
+      const elH = previewWrap.clientHeight;
+      // scale needed to make FRAME_W -> elW (so each frame fills preview)
+      const scaleX = elW / FRAME_W;
+      const scaleY = elH / FRAME_H;
+      // we'll use uniform scaleX (assume square frames)
+      const scale = scaleX;
+      const sheetW = COLS * FRAME_W;
+      const sheetH = ROWS * FRAME_H;
+      const bgW = Math.round(sheetW * scale);
+      const bgH = Math.round(sheetH * scale);
+
+      const {col, row} = frameToCR(frameIndex);
+      const posX = -Math.round(col * FRAME_W * scale);
+      const posY = -Math.round(row * FRAME_H * scale);
+
+      el.style.backgroundImage = `url("${SPRITE}")`;
+      el.style.backgroundSize = `${bgW}px ${bgH}px`;
+      el.style.backgroundPosition = `${posX}px ${posY}px`;
+      // trigger fade transition for layer-fade elements
+      if(el.classList.contains('layer-fade')){
+        // restart animation
+        el.classList.remove('show');
+        // ensure style applied before adding class
+        requestAnimationFrame(()=>{
+          el.classList.add('show');
+        });
+      }
+    }
+
+    // create option thumbnail element for a given frame
+    function makeOption(frameIndex){
+      const opt = document.createElement('button');
+      opt.className = 'option';
+      opt.setAttribute('data-frame', frameIndex);
+      // compute thumbnail background so option shows correct frame
+      // Use thumbnail size to compute scale similar to preview logic
+      // We'll compute using CSS size once inserted: simply set backgroundImage now,
+      opt.style.backgroundImage = `url("${SPRITE}")`;
+      // store col/row for layout pass
+      const {col, row} = frameToCR(frameIndex);
+      opt.dataset.col = col;
+      opt.dataset.row = row;
+      opt.addEventListener('click', () => {
+        onOptionClick(frameIndex);
+      });
+      return opt;
+    }
+
+    // layout background-size and background-position for all option buttons
+    function layoutOptions(){
+      document.querySelectorAll('.option').forEach(opt => {
+        const w = opt.clientWidth;
+        const h = opt.clientHeight;
+        const scale = w / FRAME_W;
+        const sheetW = COLS * FRAME_W;
+        const sheetH = ROWS * FRAME_H;
+        const bgW = Math.round(sheetW * scale);
+        const bgH = Math.round(sheetH * scale);
+        const col = parseInt(opt.dataset.col,10), row = parseInt(opt.dataset.row,10);
+        const posX = -Math.round(col * FRAME_W * scale);
+        const posY = -Math.round(row * FRAME_H * scale);
+        opt.style.backgroundSize = `${bgW}px ${bgH}px`;
+        opt.style.backgroundPosition = `${posX}px ${posY}px`;
+      });
+    }
+
+    // populate rows from RANGES
+    function populateRows(){
+      // helper
+      function fillRow(container, start, count){
+        container.innerHTML = '';
+        for(let i=0;i<count;i++){
+          const idx = start + i;
+          if(idx >= TOTAL) break;
+          const opt = makeOption(idx);
+          container.appendChild(opt);
+        }
+      }
+      fillRow(skinRow, RANGES.skin.start, RANGES.skin.count);
+      fillRow(hairRow, RANGES.hair.start, RANGES.hair.count);
+      fillRow(hatRow,  RANGES.hat.start,  RANGES.hat.count);
+      fillRow(exprRow, RANGES.expr.start, RANGES.expr.count);
+      fillRow(shirtRow,RANGES.shirt.start,RANGES.shirt.count);
+
+      // layout after insertion
+      requestAnimationFrame(layoutOptions);
+    }
+
+    // state
+    let state = {
+      skin: RANGES.skin.start,
+      hair: RANGES.hair.start,
+      hat:  RANGES.hat.start,
+      expr: RANGES.expr.start,
+      shirt:RANGES.shirt.start
+    };
+
+    // set UI selected class on option buttons
+    function markSelected(){
+      document.querySelectorAll('.option').forEach(el=>{
+        const idx = parseInt(el.dataset.frame,10);
+        const isSelected = (idx === state.skin || idx === state.hair || idx === state.hat || idx === state.expr || idx === state.shirt);
+        el.classList.toggle('selected', isSelected);
+      });
+    }
+
+    // apply state to layers
+    function applyState(){
+      setLayerFrame(layerShirt, state.shirt);
+      setLayerFrame(layerSkin, state.skin);
+      setLayerFrame(layerHair, state.hair);
+      setLayerFrame(layerHat,  state.hat);
+      setLayerFrame(layerExpr, state.expr);
+      // small shade/back layer: show skin silhouette or subtle background if you want
+      setLayerFrame(layerShade, null); // none by default
+      markSelected();
+    }
+
+    // when user clicks an option button: we detect which component it belongs to and set state
+    function onOptionClick(frameIndex){
+      // check which range contains frameIndex
+      if(frameIndex >= RANGES.skin.start && frameIndex < RANGES.skin.start + RANGES.skin.count){
+        state.skin = frameIndex;
+      } else if(frameIndex >= RANGES.hair.start && frameIndex < RANGES.hair.start + RANGES.hair.count){
+        state.hair = frameIndex;
+      } else if(frameIndex >= RANGES.hat.start && frameIndex < RANGES.hat.start + RANGES.hat.count){
+        state.hat = frameIndex;
+      } else if(frameIndex >= RANGES.expr.start && frameIndex < RANGES.expr.start + RANGES.expr.count){
+        state.expr = frameIndex;
+      } else if(frameIndex >= RANGES.shirt.start && frameIndex < RANGES.shirt.start + RANGES.shirt.count){
+        state.shirt = frameIndex;
+      }
+      applyState();
+    }
+
+    // randomize components
+    function randomize(){
+      const r = (min,count) => Math.floor(Math.random()*count) + min;
+      state.skin = r(RANGES.skin.start, RANGES.skin.count);
+      state.hair = r(RANGES.hair.start, RANGES.hair.count);
+      state.hat  = r(RANGES.hat.start,  RANGES.hat.count);
+      state.expr = r(RANGES.expr.start, RANGES.expr.count);
+      state.shirt= r(RANGES.shirt.start,RANGES.shirt.count);
+      applyState();
+    }
+
+    // replace existing saveTheme() with this
+    function saveTheme() {
+      try {
+        const accentEl = document.getElementById("accentColor");
+        const bgEl = document.getElementById("bgColor");
+
+        if (!accentEl || !bgEl) {
+          alert('Theme inputs not found (accentColor / bgColor).');
+          return;
+        }
+
+        const accent = accentEl.value;
+        const bg = bgEl.value;
+
+        // store several keys so different pages (and older code) can read one they expect
+        localStorage.setItem("accentColor", accent);
+        localStorage.setItem("bgColor", bg);
+        localStorage.setItem("backgroundColor", bg);
+        // store a two-stop gradient version (used by some pages)
+        const light = lightenHex(bg, 0.12);
+        localStorage.setItem("backgroundColor1", bg);
+        localStorage.setItem("backgroundColor2", light);
+
+        // apply immediately to this page
+        try {
+          document.documentElement.style.setProperty('--accent', accent);
+          document.documentElement.style.setProperty('--bg-1', bg);
+          document.documentElement.style.setProperty('--bg-2', light);
+        } catch (e) { /* ignore */ }
+
+        // also persist avatar/profile state (your existing function)
+        if (typeof saveLocal === 'function') saveLocal();
+
+        alert("Theme saved! Now all pages will match your colors.");
+      } catch (err) {
+        console.error("saveTheme error:", err);
+        alert("Could not save theme — check console.");
+      }
+    }
+
+
+    // save/load
+    function saveLocal(){
+      try{
+        const pron = (document.getElementById('pronouns')||{}).value || '';
+        const accent = (document.getElementById('accentColor')||{}).value || '';
+        const bg = (document.getElementById('bgColor')||{}).value || '';
+        const payload = Object.assign({}, state, {
+          nick: nickInput ? nickInput.value.trim() : '',
+          about: aboutInput ? aboutInput.value.trim() : '',
+          pronouns: pron,
+          accent: accent,
+          bgColor: bg
+        });
+        localStorage.setItem(LOCAL_KEY, JSON.stringify(payload));
+        // silent save — no UI buttons in this layout
+        // console.log('saved', payload);
+      }catch(e){
+        console.error('saveLocal failed', e);
+      }
+    }
+
+    function loadLocal(){
+      try{
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if(!raw) return;
+        const s = JSON.parse(raw);
+        // validate
+        if(typeof s.skin === 'number') state.skin = s.skin;
+        if(typeof s.hair === 'number') state.hair = s.hair;
+        if(typeof s.hat  === 'number') state.hat = s.hat;
+        if(typeof s.expr === 'number') state.expr = s.expr;
+        if(typeof s.shirt=== 'number') state.shirt= s.shirt;
+        // restore text fields
+        if(nickInput && typeof s.nick === 'string') nickInput.value = s.nick;
+        if(aboutInput && typeof s.about === 'string') aboutInput.value = s.about;
+        // restore pronouns and accent if present
+        const pronEl = document.getElementById('pronouns');
+        if(pronEl && typeof s.pronouns === 'string') pronEl.value = s.pronouns;
+        const accEl = document.getElementById('accentColor');
+        if(accEl && typeof s.accent === 'string' && s.accent){
+          accEl.value = s.accent;
+          try{ document.documentElement.style.setProperty('--accent', s.accent); }catch(e){}
+        }
+        const bgEl = document.getElementById('bgColor');
+        if(bgEl && typeof s.bgColor === 'string' && s.bgColor){
+          bgEl.value = s.bgColor;
+          // apply gradient: set --bg-1 to chosen and --bg-2 to a lightened variant
+          try{
+            const light = lightenHex(s.bgColor, 0.12);
+            document.documentElement.style.setProperty('--bg-1', s.bgColor);
+            document.documentElement.style.setProperty('--bg-2', light);
+          }catch(e){}
+        }
+      }catch(e){}
+    }
+
+    // Compose a PNG data URL from the selected frames (same order as exportPNG)
+    // composeDataURL removed — image composition left available via exportPNG if needed
+
+    // Export composed PNG: draw each selected frame from sprite to an offscreen canvas in order
+    function exportPNG(filename = 'avatar.png'){
+      const img = new Image();
+      img.onload = function(){
+        // final resolution: FRAME_W x FRAME_H
+        const canvas = document.createElement('canvas');
+        canvas.width = FRAME_W;
+        canvas.height = FRAME_H;
+        const ctx = canvas.getContext('2d');
+
+        // draw order: shirt (behind), skin, hair, hat, expression (top)
+        const drawFrame = (frameIndex) => {
+          if(frameIndex == null) return Promise.resolve();
+          return new Promise((resolve)=>{
+            const {col,row} = frameToCR(frameIndex);
+            // source rect on sheet
+            const sx = col*FRAME_W, sy = row*FRAME_H;
+            ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+            resolve();
+          });
+        };
+
+        // draw sequence
+        (async ()=>{
+          // clear to transparent
+          ctx.clearRect(0,0,canvas.width,canvas.height);
+          // Shirt
+          await drawFrame(state.shirt);
+          // Skin
+          await drawFrame(state.skin);
+          // Hair
+          await drawFrame(state.hair);
+          // Hat
+          await drawFrame(state.hat);
+          // Expression
+          await drawFrame(state.expr);
+
+          // export
+          canvas.toBlob(blob=>{
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }, 'image/png');
+        })();
+      };
+      img.crossOrigin = 'anonymous';
+      img.src = SPRITE;
+    }
+
+      // compose the avatar as a PNG data URL (no download) and return a Promise
+      function composeAvatarDataURL(){
+        return new Promise((resolve, reject)=>{
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = function(){
+            try{
+              const canvas = document.createElement('canvas');
+              canvas.width = FRAME_W;
+              canvas.height = FRAME_H;
+              const ctx = canvas.getContext('2d');
+
+              const drawFrame = (frameIndex)=>{
+                if(frameIndex == null) return;
+                const {col,row} = frameToCR(frameIndex);
+                const sx = col * FRAME_W;
+                const sy = row * FRAME_H;
+                ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, 0, 0, FRAME_W, FRAME_H);
+              };
+
+              // draw order: shirt, skin, hair, hat, expression
+              ctx.clearRect(0,0,canvas.width,canvas.height);
+              drawFrame(state.shirt);
+              drawFrame(state.skin);
+              drawFrame(state.hair);
+              drawFrame(state.hat);
+              drawFrame(state.expr);
+
+              resolve(canvas.toDataURL('image/png'));
+            }catch(err){ reject(err); }
+          };
+          img.onerror = reject;
+          img.src = SPRITE;
+        });
+      }
+
+    // keyboard nav (optional)
+    window.addEventListener('keydown', e=>{
+      if(e.key === 'r') randomize();
+    });
+
+    // debounce helper for input events
+    function debounce(fn, delay){
+      let t = null;
+      return (...args)=>{
+        clearTimeout(t);
+        t = setTimeout(()=> fn.apply(this, args), delay);
+      };
+    }
+
+    // initialize UI
+    function init(){
+      populateRows();
+      layoutOptions();
+      loadLocal();
+      applyState();
+
+      // staggered entrance for question cards
+      const cards = document.querySelectorAll('.question-card');
+      cards.forEach((c, i) => {
+        setTimeout(() => c.classList.add('show'), 120 * i);
+      });
+
+      // wire option clicks to auto-save
+      // override option click behavior to also persist state
+      document.addEventListener('click', (ev)=>{
+        const el = ev.target.closest('.option');
+        if(!el) return;
+        const idx = parseInt(el.dataset.frame,10);
+        if(Number.isFinite(idx)){
+          onOptionClick(idx);
+          saveLocal();
+        }
+      });
+
+      // wire export button (overlay) if present
+      const exportBtn = document.getElementById('exportBtn');
+      if(exportBtn){
+        exportBtn.addEventListener('click', ()=> exportPNG('avatar.png'));
+      }
+
+      // wire text fields to auto-save with debounce
+      const pronounsInput = document.getElementById('pronouns');
+      const accentInput = document.getElementById('accentColor');
+      const bgInput = document.getElementById('bgColor');
+      const saveDebounced = debounce(()=> saveLocal(), 420);
+      if(nickInput) nickInput.addEventListener('input', saveDebounced);
+      if(aboutInput) aboutInput.addEventListener('input', saveDebounced);
+      if(pronounsInput) pronounsInput.addEventListener('input', saveDebounced);
+      if(accentInput){
+        // apply accent color live and save
+        accentInput.addEventListener('input', (e)=>{
+          try{ document.documentElement.style.setProperty('--accent', e.target.value); }catch(err){}
+          saveDebounced();
+        });
+      }
+      if(bgInput){
+        bgInput.addEventListener('input', (e)=>{
+          const v = e.target.value;
+          try{
+            const light = lightenHex(v, 0.12);
+            document.documentElement.style.setProperty('--bg-1', v);
+            document.documentElement.style.setProperty('--bg-2', light);
+          }catch(err){}
+          saveDebounced();
+        });
+      }
+
+      // live nickname preview under avatar
+      const nickDisplay = document.getElementById('nickDisplay');
+      if(nickDisplay && nickInput){
+        nickDisplay.textContent = nickInput.value || 'Nickname';
+        nickInput.addEventListener('input', (e)=>{
+          nickDisplay.textContent = e.target.value || 'Nickname';
+          saveDebounced();
+        });
+      }
+
+      // Save button behaviour (beautiful feedback)
+      const saveProfileBtn = document.getElementById('saveProfileBtn');
+      if(saveProfileBtn){
+        saveProfileBtn.addEventListener('click', async ()=>{
+          saveProfileBtn.classList.add('saving');
+          saveLocal();
+          // compose avatar and save to localStorage so homepage/account can pick it up
+          try{
+            // decide which source to persist: uploaded or generated
+            const selectedSource = document.querySelector('input[name="avatarSource"]:checked')?.value || 'generated';
+            let dataUrl = null;
+            if(selectedSource === 'uploaded'){
+              if(uploadedNormalizedDataUrl){
+                dataUrl = uploadedNormalizedDataUrl;
+              } else if(uploadedRawDataUrl){
+                // normalize on the fly
+                dataUrl = await normalizeImageToFrame(uploadedRawDataUrl).catch(e=>{ console.warn('normalize on save failed', e); return null; });
+                uploadedNormalizedDataUrl = dataUrl || uploadedNormalizedDataUrl;
+              } else {
+                // fallback to generated if no upload present
+                dataUrl = await composeAvatarDataURL();
+              }
+            } else {
+              dataUrl = await composeAvatarDataURL();
+            }
+
+            if(dataUrl){
+              localStorage.setItem('profileAvatar', dataUrl);
+              // remember which source user chose
+              localStorage.setItem('profileAvatarSource', selectedSource);
+              const pIcon = document.getElementById('profileIcon');
+              const dd = document.getElementById('dropdownAvatar');
+              if(pIcon) pIcon.src = dataUrl;
+              if(dd) dd.src = dataUrl;
+            }
+          }catch(e){ console.warn('could not compose avatar', e); }
+          // visual feedback
+          setTimeout(()=>{
+            saveProfileBtn.classList.remove('saving');
+            saveProfileBtn.classList.add('saved');
+            const old = saveProfileBtn.textContent;
+            saveProfileBtn.textContent = 'Saved';
+            setTimeout(()=>{ saveProfileBtn.classList.remove('saved'); saveProfileBtn.textContent = old; }, 1200);
+          }, 450);
+        });
+      }
+
+      // top menu dropdown (hamburger animation)
+      const menuBtn = document.getElementById('menuBtn');
+      const menuDropdown = document.getElementById('menuDropdown');
+      if(menuBtn && menuDropdown){
+        menuBtn.addEventListener('click', (e)=>{
+          const open = menuBtn.classList.toggle('open');
+          menuDropdown.classList.toggle('show', open);
+          menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          menuDropdown.setAttribute('aria-hidden', open ? 'false' : 'true');
+        });
+        // close when clicking outside
+        document.addEventListener('click', (e)=>{ if(!e.target.closest('.avatar-menu') && !e.target.closest('#menuBtn')){ menuDropdown.classList.remove('show'); menuBtn.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); menuDropdown.setAttribute('aria-hidden','true'); } });
+        // keyboard: Esc to close
+        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ menuDropdown.classList.remove('show'); menuBtn.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); menuDropdown.setAttribute('aria-hidden','true'); } });
+      }
+
+      // relayout on resize
+      window.addEventListener('resize', layoutOptions);
+    }
+
+    init();
+
+
+
+    const uploadInput = document.getElementById("profileUpload");
+    const profileIcon = document.getElementById("profileIcon");
+    const dropdownAvatar = document.getElementById("dropdownAvatar");
+
+    // uploaded image holders (raw + normalized to FRAME_W x FRAME_H)
+    let uploadedRawDataUrl = null;
+    let uploadedNormalizedDataUrl = null;
+
+    // helper: normalize any image data URL to FRAME_W x FRAME_H using COVER behavior
+    function normalizeImageToFrame(dataUrl){
+      return new Promise((resolve,reject)=>{
+        if(!dataUrl) return resolve(null);
+        const img = new Image();
+        img.onload = function(){
+          try{
+            const canvas = document.createElement('canvas');
+            canvas.width = FRAME_W;
+            canvas.height = FRAME_H;
+            const ctx = canvas.getContext('2d');
+
+            // cover scale: image scaled so it fills the frame, then center-cropped
+            const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+            const sw = canvas.width / scale;
+            const sh = canvas.height / scale;
+            const sx = Math.max(0, (img.width - sw) / 2);
+            const sy = Math.max(0, (img.height - sh) / 2);
+
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/png'));
+          }catch(err){ reject(err); }
+        };
+        img.onerror = function(e){ reject(e); };
+        img.src = dataUrl;
+      });
+    }
+
+    // Load saved image on page load
+    const savedAvatar = localStorage.getItem("profileAvatar");
+    const savedAvatarSource = localStorage.getItem('profileAvatarSource') || 'generated';
+    if (savedAvatar) {
+      if(profileIcon) profileIcon.src = savedAvatar;
+      if(dropdownAvatar) dropdownAvatar.src = savedAvatar;
+    }
+
+    // restore source radio if present
+    const srcGenRadio = document.getElementById('avatarSourceGenerated');
+    const srcUploadRadio = document.getElementById('avatarSourceUploaded');
+    if(srcGenRadio && srcUploadRadio){
+      if(savedAvatarSource === 'uploaded') srcUploadRadio.checked = true;
+      else srcGenRadio.checked = true;
+    }
+
+    // when user toggles source, update preview to reflect choice
+    if(srcGenRadio || srcUploadRadio){
+      const onSourceChange = async ()=>{
+        const sel = document.querySelector('input[name="avatarSource"]:checked')?.value || 'generated';
+        if(sel === 'uploaded'){
+          if(uploadedNormalizedDataUrl){
+            profileIcon.src = uploadedNormalizedDataUrl;
+          } else if(uploadedRawDataUrl){
+            try{ uploadedNormalizedDataUrl = await normalizeImageToFrame(uploadedRawDataUrl); profileIcon.src = uploadedNormalizedDataUrl; }catch(e){}
+          } else {
+            // nothing uploaded yet - leave preview as-is
+          }
+        } else {
+          // show composed avatar preview
+          try{ const d = await composeAvatarDataURL(); profileIcon.src = d; }catch(e){ console.warn('compose preview failed', e); }
+        }
+      };
+      srcGenRadio && srcGenRadio.addEventListener('change', onSourceChange);
+      srcUploadRadio && srcUploadRadio.addEventListener('change', onSourceChange);
+    }
+
+    // When user uploads a new image
+    if(uploadInput){
+      uploadInput.addEventListener("change", () => {
+        const file = uploadInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          // hold raw upload and build a normalized square version at FRAME_W x FRAME_H
+          uploadedRawDataUrl = reader.result;
+          normalizeImageToFrame(reader.result).then(norm => {
+            uploadedNormalizedDataUrl = norm;
+            // when user just uploaded, switch to uploaded source so they see it immediately
+            if(srcUploadRadio) srcUploadRadio.checked = true;
+            if(profileIcon && uploadedNormalizedDataUrl) profileIcon.src = uploadedNormalizedDataUrl;
+            // do not overwrite global saved profileAvatar yet; wait for explicit Save
+          }).catch(e=>{
+            console.warn('normalize upload failed', e);
+            // fallback to raw if normalization fails
+            try{ if(profileIcon) profileIcon.src = reader.result; }catch(_){}
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
 </body>
 </html>
